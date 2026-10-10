@@ -1,0 +1,114 @@
+{
+  "products": [
+    {
+      "id": 900000000001,
+      "title": "  Unnamed Single Variant  ",
+      "handle": "unnamed-single-variant",
+      "body_html": "<p>Caf&eacute; blend, 100% <strong>arabica</strong>.</p>\n<ul><li>Dark roast</li></ul>",
+      "published_at": "2026-01-02T10:00:00-05:00",
+      "vendor": "",
+      "product_type": "",
+      "tags": [],
+      "variants": [
+        {
+          "id": 800000000001,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null,
+          "sku": "",
+          "featured_image": null,
+          "available": true,
+          "price": "9.50",
+          "grams": 0,
+          "compare_at_price": "0.00",
+          "position": 1,
+          "product_id": 900000000001
+        }
+      ],
+      "images": [],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "Default Title"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 900000000002,
+      "title": "Protocol Relative Image",
+      "handle": "protocol-relative-image",
+      "body_html": null,
+      "published_at": "2026-02-03T10:00:00-05:00",
+      "vendor": "Acme",
+      "product_type": "Mugs",
+      "tags": [
+        "drinkware",
+        "ceramic"
+      ],
+      "variants": [
+        {
+          "id": 800000000002,
+          "title": "Small / Red",
+          "option1": "Small",
+          "option2": "Red",
+          "option3": null,
+          "sku": "MUG-S-RED",
+          "featured_image": null,
+          "available": true,
+          "price": "14.00",
+          "grams": 320,
+          "compare_at_price": "18.00",
+          "position": 1,
+          "product_id": 900000000002
+        },
+        {
+          "id": 800000000003,
+          "title": "Large / Red",
+          "option1": "Large",
+          "option2": "Red",
+          "option3": null,
+          "sku": "MUG-L-RED",
+          "featured_image": null,
+          "available": false,
+          "price": "11.25",
+          "grams": 480,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 900000000002
+        }
+      ],
+      "images": [
+        {
+          "id": 700000000001,
+          "product_id": 900000000002,
+          "position": 1,
+          "src": "//cdn.shopify.com/s/files/1/mug.jpg",
+          "width": 1200,
+          "height": 1200,
+          "variant_ids": []
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "Small",
+            "Large"
+          ]
+        },
+        {
+          "name": "Color",
+          "position": 2,
+          "values": [
+            "Red"
+          ]
+        }
+      ]
+    }
+  ]
+}

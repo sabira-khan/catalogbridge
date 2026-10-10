@@ -1,0 +1,231 @@
+{
+  "products": [
+    {
+      "id": 7340901859408,
+      "title": "Women's Allbirds Flip Flop - Dusty Pink",
+      "handle": "womens-allbirds-flip-flop-dusty-pink",
+      "body_html": "<p>Sun on your feet. Comfort underneath. Light, easy, and made for warm weather, these flip flops bring everyday comfort to sunny days, beach walks, and everything in between. Just slip them on and go.</p>",
+      "published_at": "2026-09-25T16:58:13-07:00",
+      "vendor": "Allbirds",
+      "product_type": "Shoes",
+      "tags": [
+        "allbirds::carbon-score => undefined",
+        "allbirds::cfId => color-a4d5d0f6620dc304306f503bf67bc5f9",
+        "allbirds::complete => true",
+        "allbirds::edition => limited",
+        "allbirds::gender => womens",
+        "allbirds::hue => pink",
+        "allbirds::master => womens-allbirds-flip-flop",
+        "allbirds::material => sugar",
+        "allbirds::price-tier => tier-3",
+        "allbirds::silhouette => zeffer",
+        "loop::returnable => true",
+        "OOS DNS",
+        "shoprunner",
+        "WC WAVE 1 TRUCK #1-#16 7.30.2026",
+        "YBlocklist",
+        "YGroup_ygroup_womens-allbirds-flip-flop"
+      ],
+      "variants": [
+        {
+          "id": 42146889039952,
+          "title": "5",
+          "option1": "5",
+          "option2": null,
+          "option3": null,
+          "sku": "A12513W050",
+          "featured_image": null,
+          "available": false,
+          "price": "25.00",
+          "grams": 455,
+          "compare_at_price": "50.00",
+          "position": 1,
+          "product_id": 7340901859408
+        },
+        {
+          "id": 42146889072720,
+          "title": "6",
+          "option1": "6",
+          "option2": null,
+          "option3": null,
+          "sku": "A12513W060",
+          "featured_image": null,
+          "available": false,
+          "price": "25.00",
+          "grams": 492,
+          "compare_at_price": "50.00",
+          "position": 2,
+          "product_id": 7340901859408
+        },
+        {
+          "id": 42146889105488,
+          "title": "7",
+          "option1": "7",
+          "option2": null,
+          "option3": null,
+          "sku": "A12513W070",
+          "featured_image": null,
+          "available": false,
+          "price": "25.00",
+          "grams": 503,
+          "compare_at_price": "50.00",
+          "position": 3,
+          "product_id": 7340901859408
+        }
+      ],
+      "images": [
+        {
+          "id": 36231482212432,
+          "position": 1,
+          "product_id": 7340901859408,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/1104/4168/files/A12513_26Q2_Allbirds-Flip-Flop-Dusty-Pink_PDP_LEFT.png?v=1774646345",
+          "width": 4000,
+          "height": 4000
+        },
+        {
+          "id": 36231482245200,
+          "position": 2,
+          "product_id": 7340901859408,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/1104/4168/files/A12513_26Q2_Allbirds-Flip-Flop-Dusty-Pink_PDP_BACK.png?v=1774646345",
+          "width": 4000,
+          "height": 4000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7258385809488,
+      "title": "Men's Canvas Runner NZ - Deep Navy Stripes (Blizzard Sole)",
+      "handle": "mens-canvas-runner-nz",
+      "body_html": "<p> </p>",
+      "published_at": "2026-09-25T16:58:09-07:00",
+      "vendor": "Allbirds",
+      "product_type": "Shoes",
+      "tags": [
+        "allbirds::carbon-score => undefined",
+        "allbirds::cfId => color-1cef6be0d20d9c20d604095208afc4c8",
+        "allbirds::complete => true",
+        "allbirds::edition => limited",
+        "allbirds::gender => mens",
+        "allbirds::hue => blue",
+        "allbirds::hue => white",
+        "allbirds::master => mens-canvas-runner-nz",
+        "allbirds::material => cotton",
+        "allbirds::price-tier => msrp",
+        "allbirds::silhouette => runner",
+        "loop::returnable => true",
+        "OOS DNS",
+        "shoprunner",
+        "WAVE 2 ECDC",
+        "Wave1_EC-A PL",
+        "WC WAVE 1 TRUCK #1-#16 7.30.2026",
+        "YCRF_mens-move-shoes-half-sizes",
+        "YGroup_ygroup_mens-canvas-runner-nz"
+      ],
+      "variants": [
+        {
+          "id": 41884546990160,
+          "title": "8",
+          "option1": "8",
+          "option2": null,
+          "option3": null,
+          "sku": "A12498M080",
+          "featured_image": null,
+          "available": false,
+          "price": "100.00",
+          "grams": 715,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 7258385809488
+        },
+        {
+          "id": 41884547022928,
+          "title": "8.5",
+          "option1": "8.5",
+          "option2": null,
+          "option3": null,
+          "sku": "A12498M085",
+          "featured_image": null,
+          "available": true,
+          "price": "100.00",
+          "grams": 726,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 7258385809488
+        },
+        {
+          "id": 41884547055696,
+          "title": "9",
+          "option1": "9",
+          "option2": null,
+          "option3": null,
+          "sku": "A12498M090",
+          "featured_image": null,
+          "available": false,
+          "price": "100.00",
+          "grams": 745,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 7258385809488
+        }
+      ],
+      "images": [
+        {
+          "id": 36223203442768,
+          "position": 1,
+          "product_id": 7258385809488,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/1104/4168/files/A12500_26Q1_Runner-NZ-Canvas-Stripes-Deep-Navy-Blizzard-Sole_PDP_LEFT.png?v=1774550585",
+          "width": 4000,
+          "height": 4000
+        },
+        {
+          "id": 36223203475536,
+          "position": 2,
+          "product_id": 7258385809488,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/1104/4168/files/A12500_26Q1_Runner-NZ-Canvas-Stripes-Deep-Navy-Blizzard-Sole_PDP_BACK.png?v=1774550584",
+          "width": 4000,
+          "height": 4000
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "8",
+            "8.5",
+            "9",
+            "9.5",
+            "10",
+            "10.5",
+            "11",
+            "11.5",
+            "12",
+            "12.5",
+            "13",
+            "13.5",
+            "14"
+          ]
+        }
+      ]
+    }
+  ]
+}

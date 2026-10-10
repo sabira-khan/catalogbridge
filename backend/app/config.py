@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     connector_page_size: int = 250
     connector_max_pages: int = 100
     connector_page_delay: float = 0.2
+    connector_max_attempts: int = 4
+    connector_backoff_base: float = 1.0
+    connector_backoff_cap: float = 20.0
 
     @property
     def llm_configured(self) -> bool:

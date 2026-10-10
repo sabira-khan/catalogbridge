@@ -1,0 +1,171 @@
+{
+  "products": [
+    {
+      "id": 6608733995063,
+      "title": "Gingerdead Single-Serve Pods",
+      "handle": "gingerdead-coffee-cups",
+      "body_html": "<h4>Ginger? Oh snap.\u00a0\u00a0</h4>\n<p>Nothing says holiday season like warm gingerbread on a cold winter\u2019s morning. Our limited edition blend infuses medium roasted robusta and arabica beans with a festive natural flavor mix of ginger, cinnamon, c",
+      "published_at": "2026-10-08T09:15:33-04:00",
+      "vendor": "Death Wish Coffee Company",
+      "product_type": "Coffee",
+      "tags": [
+        "Gingerdead",
+        "Single Serve",
+        "Society of Strong Coffee"
+      ],
+      "variants": [
+        {
+          "id": 39534412496951,
+          "title": "10-count",
+          "option1": "10-count",
+          "option2": null,
+          "option3": null,
+          "sku": "LCGNGD10",
+          "featured_image": null,
+          "available": true,
+          "price": "12.99",
+          "grams": 198,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 6608733995063
+        },
+        {
+          "id": 39534412529719,
+          "title": "20-count",
+          "option1": "20-count",
+          "option2": null,
+          "option3": null,
+          "sku": "LCGNGD20K",
+          "featured_image": null,
+          "available": true,
+          "price": "25.98",
+          "grams": 397,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 6608733995063
+        },
+        {
+          "id": 39534412562487,
+          "title": "30-count",
+          "option1": "30-count",
+          "option2": null,
+          "option3": null,
+          "sku": "LCGNGD30K",
+          "featured_image": null,
+          "available": true,
+          "price": "38.97",
+          "grams": 595,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 6608733995063
+        }
+      ],
+      "images": [
+        {
+          "id": 43124603289655,
+          "position": 1,
+          "product_id": 6608733995063,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0271/7209/files/Gingerdead_10ct_Angle_Vertical_Pods_DTC_SA.jpg?v=1791305384",
+          "width": 1500,
+          "height": 1500
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "10-count",
+            "20-count",
+            "30-count"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 10197341044791,
+      "title": "Gingerdead Coffee",
+      "handle": "gingerdead-coffee",
+      "body_html": "<h4>Ginger? Oh snap.</h4>\n<p>Nothing says holiday season like warm gingerbread on a cold winter\u2019s morning. Our limited edition blend infuses medium roasted robusta and arabica beans with a festive natural flavor mix of ginger, cinnamon, clo",
+      "published_at": "2026-10-08T09:15:21-04:00",
+      "vendor": "Death Wish Coffee",
+      "product_type": "Coffee",
+      "tags": [
+        "Bagged",
+        "Gingerdead",
+        "LTO Coffee",
+        "Society of Strong Coffee"
+      ],
+      "variants": [
+        {
+          "id": 67586922119223,
+          "title": "1 bag",
+          "option1": "1 bag",
+          "option2": null,
+          "option3": null,
+          "sku": "LGGNGD09",
+          "featured_image": null,
+          "available": true,
+          "price": "13.99",
+          "grams": 283,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 10197341044791
+        },
+        {
+          "id": 67586922151991,
+          "title": "2 bags",
+          "option1": "2 bags",
+          "option2": null,
+          "option3": null,
+          "sku": "LGGNGD18K",
+          "featured_image": null,
+          "available": true,
+          "price": "27.98",
+          "grams": 567,
+          "compare_at_price": null,
+          "position": 2,
+          "product_id": 10197341044791
+        },
+        {
+          "id": 67586922184759,
+          "title": "5 bags",
+          "option1": "5 bags",
+          "option2": null,
+          "option3": null,
+          "sku": "LGGNGD45K",
+          "featured_image": null,
+          "available": true,
+          "price": "69.95",
+          "grams": 1417,
+          "compare_at_price": null,
+          "position": 3,
+          "product_id": 10197341044791
+        }
+      ],
+      "images": [
+        {
+          "id": 43124294287415,
+          "position": 1,
+          "product_id": 10197341044791,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0271/7209/files/Gingerdead_9oz_Ground_Angle_DTC_SA.jpg?v=1791300406",
+          "width": 1500,
+          "height": 1500
+        }
+      ],
+      "options": [
+        {
+          "name": "Size",
+          "position": 1,
+          "values": [
+            "1 bag",
+            "2 bags",
+            "5 bags"
+          ]
+        }
+      ]
+    }
+  ]
+}
