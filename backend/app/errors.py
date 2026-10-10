@@ -46,6 +46,13 @@ class StorePasswordProtectedError(ConnectorError):
         super().__init__(f"{url} is password protected, its catalog is not public")
 
 
+class NormalizationError(CatalogBridgeError):
+    def __init__(self, source_id: str, reason: str) -> None:
+        self.source_id = source_id
+        self.reason = reason
+        super().__init__(f"cannot normalize record {source_id or '<no id>'}: {reason}")
+
+
 class LLMError(CatalogBridgeError):
     pass
 
