@@ -8,6 +8,7 @@ from app.errors import NormalizationError
 from app.logging import get_logger, log_event
 from app.models.canonical import Attribute, Product, ProductImage, Variant, VariantOption
 from app.models.enums import AttributeOrigin, SourcePlatform
+from app.pipeline.base import Normalizer
 from app.pipeline.html import html_to_text
 
 PLACEHOLDER_OPTION_VALUES = frozenset({"default title"})
@@ -15,6 +16,19 @@ PLACEHOLDER_OPTION_NAMES = frozenset({"title"})
 MAX_SHOPIFY_OPTIONS = 3
 
 logger = get_logger(__name__)
+
+
+class ShopifyNormalizer(Normalizer):
+    platform = SourcePlatform.SHOPIFY
+    requires_llm = False
+
+    async def normalize(self, record: dict[str, Any], context: SourceContext) -> Product:
+        return normalize_shopify_product(record, context)
+
+    async def normalize_batch(
+        self, records: list[dict[str, Any]], context: SourceContext
+    ) -> list[Product]:
+        return normalize_shopify_products(records, context)
 
 
 def normalize_shopify_products(

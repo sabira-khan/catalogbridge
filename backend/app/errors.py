@@ -61,6 +61,12 @@ class LLMTransportError(LLMError):
     pass
 
 
+class PromptNotFoundError(LLMError):
+    def __init__(self, name: str) -> None:
+        self.name = name
+        super().__init__(f"no prompt file named {name}.md")
+
+
 class SchemaValidationError(LLMError):
     def __init__(self, model_name: str, errors: str, raw_output: str) -> None:
         self.model_name = model_name
