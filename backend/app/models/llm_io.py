@@ -21,3 +21,9 @@ class ProductDraft(CanonicalModel):
     tags: list[str] = Field(default_factory=list)
     confidence: float = Field(ge=0.0, le=1.0)
     notes: str | None = None
+
+
+class ConnectivityCheck(CanonicalModel):
+    ok: bool
+    model_family: str
+    one_line_summary: str

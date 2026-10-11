@@ -51,6 +51,10 @@ class ShopifyConnector(Connector):
         self.base_url = normalize_store_url(source)
         self._pages_fetched = 0
 
+    @property
+    def pages_fetched(self) -> int:
+        return self._pages_fetched
+
     async def discover(self) -> SourceContext:
         currency, store_name = await self._fetch_meta()
         return SourceContext(

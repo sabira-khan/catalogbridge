@@ -31,6 +31,10 @@ class Connector(ABC):
         self.settings = settings
         self.client = client
 
+    @property
+    def pages_fetched(self) -> int:
+        return 0
+
     @abstractmethod
     async def discover(self) -> SourceContext: ...
 

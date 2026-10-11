@@ -7,7 +7,7 @@ from app.models.canonical import (
     VariantOption,
 )
 from app.models.enums import AttributeOrigin, SourcePlatform
-from app.models.llm_io import ProductDraft, VariantDraft
+from app.models.llm_io import ConnectivityCheck, ProductDraft, VariantDraft
 from app.models.mapping import (
     CategoryCandidate,
     MappedAttribute,
@@ -20,6 +20,7 @@ __all__ = [
     "AttributeOrigin",
     "CanonicalModel",
     "CategoryCandidate",
+    "ConnectivityCheck",
     "MappedAttribute",
     "MappedProduct",
     "Product",
