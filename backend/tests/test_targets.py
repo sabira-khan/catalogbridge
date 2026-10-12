@@ -41,7 +41,7 @@ def test_shipped_apparel_spec_loads_and_validates() -> None:
     assert len(specs) == 1
     spec = specs[0]
     assert spec.id == "meridian_apparel"
-    assert len(spec.categories) == 20
+    assert len(spec.categories) == 22
     assert spec.default_language == "en"
     assert "ar" in spec.languages
 
@@ -74,9 +74,9 @@ def test_embedding_text_combines_path_and_keywords() -> None:
     assert category.label == "Women > Jeans"
 
 
-def test_keyword_terms_are_lowercased_for_the_baseline() -> None:
+def test_keyword_terms_exclude_the_path_to_keep_the_baseline_discriminative() -> None:
     category = TargetCategory(id="c1", name="Jeans", path=["Women", "Jeans"], keywords=["Denim"])
-    assert category.keyword_terms() == ["jeans", "women", "jeans", "denim"]
+    assert category.keyword_terms() == ["jeans", "denim"]
 
 
 def test_needs_review_follows_the_threshold() -> None:

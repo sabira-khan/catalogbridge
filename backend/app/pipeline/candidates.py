@@ -10,6 +10,7 @@ from app.models.mapping import CategoryCandidate
 from app.models.target import TargetSpec
 
 WORD = re.compile(r"[a-z0-9]+")
+PLURAL_MIN_LENGTH = 4
 DESCRIPTION_CHARS = 400
 DEFAULT_TOP_K = 5
 
@@ -49,7 +50,7 @@ class KeywordCandidates(CandidateSource):
     async def candidates(
         self, product: Product, spec: TargetSpec, top_k: int = DEFAULT_TOP_K
     ) -> list[CategoryCandidate]:
-        tokens = set(WORD.findall(product_text(product).lower()))
+        tokens = {stem(token) for token in WORD.findall(product_text(product).lower())}
         scored: list[tuple[float, CategoryCandidate]] = []
         for category in spec.categories:
             terms = category.keyword_terms()
@@ -112,6 +113,16 @@ class EmbeddingCandidates(CandidateSource):
         return [candidate for _, candidate in scored[:top_k]]
 
 
+def stem(word: str) -> str:
+    if word.endswith("ies") and len(word) > PLURAL_MIN_LENGTH:
+        return f"{word[:-3]}y"
+    if word.endswith(("sses", "shes", "ches")):
+        return word[:-2]
+    if word.endswith("s") and not word.endswith("ss") and len(word) >= PLURAL_MIN_LENGTH:
+        return word[:-1]
+    return word
+
+
 def _matches(term: str, tokens: set[str]) -> bool:
-    parts = WORD.findall(term)
+    parts = [stem(part) for part in WORD.findall(term)]
     return bool(parts) and all(part in tokens for part in parts)

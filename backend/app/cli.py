@@ -16,16 +16,25 @@ from app.connectors.base import SourceContext
 from app.connectors.registry import build_client, get_connector
 from app.errors import CatalogBridgeError
 from app.llm.client import LLMClient
+from app.llm.embeddings import EmbeddingClient
 from app.llm.prompts.loader import render_prompt
 from app.llm.usage import UsageRecord
 from app.logging import configure_logging
 from app.models.canonical import Product
 from app.models.enums import SourcePlatform
 from app.models.llm_io import ConnectivityCheck
+from app.models.mapping import CategoryCandidate, MappedProduct
 from app.models.target import TargetSpec
-from app.pipeline.load import LOADERS
+from app.pipeline.candidates import (
+    DEFAULT_TOP_K,
+    CandidateSource,
+    EmbeddingCandidates,
+    KeywordCandidates,
+)
+from app.pipeline.load import LOADERS, get_loader
+from app.pipeline.map import CategoryMapper
 from app.pipeline.registry import get_normalizer
-from app.pipeline.targets import load_target_specs
+from app.pipeline.targets import find_target_spec, load_target_specs
 
 OWNERSHIP_NOTICE = (
     "CatalogBridge reads a store's public product feed. Only run it against a catalog "
@@ -45,6 +54,17 @@ class OutputFormat(StrEnum):
     TABLE = "table"
     JSON = "json"
     JSONL = "jsonl"
+
+
+class Retriever(StrEnum):
+    KEYWORD = "keyword"
+    EMBEDDING = "embedding"
+
+
+class MapFormat(StrEnum):
+    TABLE = "table"
+    JSON = "json"
+    CSV = "csv"
 
 
 @app.command()
@@ -110,6 +130,73 @@ def llm_check(
     table.add_row("latency", f"{usage.latency_ms} ms")
     table.add_row("attempts", f"{usage.attempts} ({usage.repairs} repairs)")
     console.print(table)
+
+
+@app.command("map")
+def map_catalog(
+    source: Annotated[str, typer.Argument(help="Store URL, for example examplestore.com")],
+    target: Annotated[str, typer.Option("--target", help="Target spec id")],
+    platform: Annotated[
+        SourcePlatform, typer.Option("--platform", help="Source platform")
+    ] = SourcePlatform.SHOPIFY,
+    retriever: Annotated[
+        Retriever, typer.Option("--retriever", help="How candidates are retrieved")
+    ] = Retriever.EMBEDDING,
+    top_k: Annotated[int, typer.Option("--top-k", help="Candidates per product")] = DEFAULT_TOP_K,
+    candidates_only: Annotated[
+        bool,
+        typer.Option(
+            "--candidates-only",
+            help="Stop after retrieval and show candidates, no model calls",
+        ),
+    ] = False,
+    map_format: Annotated[
+        MapFormat, typer.Option("--format", help="How to print the result")
+    ] = MapFormat.TABLE,
+    limit: Annotated[int | None, typer.Option("--limit", help="Stop after N products")] = None,
+    out: Annotated[Path | None, typer.Option("--out", help="Write to a file")] = None,
+    i_own_this_catalog: Annotated[
+        bool, typer.Option("--i-own-this-catalog", help="Confirm you may migrate this catalog")
+    ] = False,
+    verbose: Annotated[bool, typer.Option("-v", "--verbose", help="Log every step")] = False,
+) -> None:
+    settings = _settings(verbose)
+    spec = find_target_spec(target)
+    if spec is None:
+        errors.print(f"[red]No target spec with id {target}. Try: catalogbridge targets[/red]")
+        raise typer.Exit(1)
+    needs_key = not candidates_only or retriever is Retriever.EMBEDDING
+    if needs_key and not settings.llm_configured:
+        errors.print("[red]NEBIUS_API_KEY is not set. Copy .env.example to .env first.[/red]")
+        errors.print(
+            "[yellow]To see retrieval without a key: "
+            "--candidates-only --retriever keyword[/yellow]"
+        )
+        raise typer.Exit(1)
+    if not i_own_this_catalog:
+        errors.print(f"[yellow]{OWNERSHIP_NOTICE}[/yellow]")
+        typer.confirm("Do you own or have authorization to migrate this catalog?", abort=True)
+
+    try:
+        products, context = asyncio.run(_extract(source, platform, settings, limit))
+        if candidates_only:
+            shortlists = asyncio.run(_shortlists(products, spec, settings, retriever, top_k))
+            _print_candidates(shortlists, spec.id)
+            return
+        mapped = asyncio.run(_map(products, spec, settings, retriever, top_k))
+    except CatalogBridgeError as exc:
+        errors.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+
+    if map_format is MapFormat.TABLE and out is None:
+        _print_mapped(mapped, spec)
+        return
+    rendered = get_loader("csv" if map_format is MapFormat.CSV else "json").dump(mapped, spec)
+    if out is not None:
+        out.write_text(rendered, encoding="utf-8")
+        console.print(f"Wrote {len(mapped)} mapped products to {out}")
+    else:
+        console.print(rendered, soft_wrap=True)
 
 
 @app.command()
@@ -184,6 +271,81 @@ async def _llm_check(
         model=model,
     )
     return result, usage
+
+
+def _candidate_source(
+    settings: Settings, retriever: Retriever
+) -> CandidateSource:
+    if retriever is Retriever.KEYWORD:
+        return KeywordCandidates()
+    return EmbeddingCandidates(EmbeddingClient(settings))
+
+
+async def _shortlists(
+    products: list[Product],
+    spec: TargetSpec,
+    settings: Settings,
+    retriever: Retriever,
+    top_k: int,
+) -> list[tuple[Product, list[CategoryCandidate]]]:
+    source = _candidate_source(settings, retriever)
+    return [(p, await source.candidates(p, spec, top_k)) for p in products]
+
+
+async def _map(
+    products: list[Product],
+    spec: TargetSpec,
+    settings: Settings,
+    retriever: Retriever,
+    top_k: int,
+) -> list[MappedProduct]:
+    mapper = CategoryMapper(
+        spec, LLMClient(settings), _candidate_source(settings, retriever), top_k=top_k
+    )
+    return await mapper.map_products(products)
+
+
+def _print_candidates(
+    shortlists: list[tuple[Product, list[CategoryCandidate]]], target_id: str
+) -> None:
+    table = Table(title=f"Retrieved candidates for {target_id}")
+    table.add_column("Product", max_width=34, no_wrap=True, overflow="ellipsis")
+    table.add_column("Top candidates")
+    for product, candidates in shortlists:
+        joined = ", ".join(f"{c.category_id} {c.similarity:.2f}" for c in candidates)
+        rendered = joined or "[dim]none[/dim]"
+        table.add_row(product.title, rendered)
+    console.print(table)
+    empty = sum(1 for _, candidates in shortlists if not candidates)
+    console.print(
+        f"{len(shortlists)} products, {empty} with no candidate. No model calls were made."
+    )
+
+
+def _print_mapped(mapped: list[MappedProduct], spec: TargetSpec) -> None:
+    table = Table(title=f"{spec.name}: {len(mapped)} products")
+    table.add_column("Product", max_width=30, no_wrap=True, overflow="ellipsis")
+    table.add_column("Category", max_width=28, no_wrap=True, overflow="ellipsis")
+    table.add_column("Conf", justify="right", width=5)
+    table.add_column("Missing", max_width=20, overflow="ellipsis")
+    table.add_column("Review", width=6)
+    for item in mapped:
+        table.add_row(
+            item.product.title,
+            " > ".join(item.target_category_path) or "[red]unmapped[/red]",
+            f"{item.category_confidence:.2f}",
+            ", ".join(item.missing_attributes) or "-",
+            "[yellow]yes[/yellow]" if item.needs_review else "no",
+        )
+    console.print(table)
+    flagged = sum(1 for item in mapped if item.needs_review)
+    unmapped = sum(1 for item in mapped if item.target_category_id is None)
+    confidences = [item.category_confidence for item in mapped]
+    mean = sum(confidences) / len(confidences) if confidences else 0.0
+    console.print(
+        f"{flagged} of {len(mapped)} need review, {unmapped} unmapped, "
+        f"mean confidence {mean:.2f}, threshold {spec.confidence_threshold:.2f}"
+    )
 
 
 def _render(products: list[Product], context: SourceContext, fmt: OutputFormat) -> str:

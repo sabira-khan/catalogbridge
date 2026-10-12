@@ -275,7 +275,7 @@ categories:
   - id: footwear_sneakers
     name: Sneakers
     path: [Footwear, Sneakers]
-    keywords: [sneakers, trainers, running shoes, runners, plimsolls]
+    keywords: [sneaker, trainer, running shoe, runner, plimsoll, cruiser, canvas shoe]
     attributes:
       - key: eu_size
         label: EU size
@@ -290,7 +290,7 @@ categories:
   - id: footwear_boots
     name: Boots
     path: [Footwear, Boots]
-    keywords: [boots, ankle boots, chelsea boots, hiking boots]
+    keywords: [boot, ankle boot, chelsea boot, hiking boot]
     attributes:
       - key: eu_size
         label: EU size
@@ -302,10 +302,30 @@ categories:
         required: false
         unit: cm
 
+  - id: footwear_sandals
+    name: Sandals and flip flops
+    path: [Footwear, Sandals and flip flops]
+    keywords: [sandal, flip flop, slide, espadrille, mule]
+    attributes:
+      - key: eu_size
+        label: EU size
+        type: text
+        required: true
+
+  - id: footwear_flats
+    name: Flats and loafers
+    path: [Footwear, Flats and loafers]
+    keywords: [loafer, ballet flat, moccasin, slipper, slip-on shoe]
+    attributes:
+      - key: eu_size
+        label: EU size
+        type: text
+        required: true
+
   - id: acc_bags
     name: Bags
     path: [Accessories, Bags]
-    keywords: [bag, tote, backpack, crossbody, shoulder bag, clutch]
+    keywords: [bag, tote, backpack, crossbody, shoulder bag, clutch, handbag]
     attributes:
       - key: bag_type
         label: Bag type
@@ -332,7 +352,7 @@ categories:
   - id: acc_scarves
     name: Scarves and gloves
     path: [Accessories, Scarves and gloves]
-    keywords: [scarf, gloves, mittens, snood, shawl]
+    keywords: [scarf, glove, mitten, snood, shawl]
     attributes:
       - key: size
         label: Size
@@ -343,7 +363,7 @@ categories:
   - id: acc_socks
     name: Socks and hosiery
     path: [Accessories, Socks and hosiery]
-    keywords: [socks, tights, hosiery, stockings, no-show socks]
+    keywords: [sock, tight, hosiery, stocking, no-show sock]
     attributes:
       - key: size
         label: Size

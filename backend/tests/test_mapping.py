@@ -17,6 +17,7 @@ from app.pipeline.candidates import (
     EmbeddingCandidates,
     KeywordCandidates,
     product_text,
+    stem,
 )
 from app.pipeline.map import CategoryMapper
 from app.pipeline.targets import load_target_specs
@@ -462,3 +463,46 @@ async def test_mapping_a_batch_returns_one_result_per_product(
     mapped = await mapper.map_products([jumper(), jumper()])
     assert len(mapped) == 2
     assert len(replies.calls) == 2
+
+
+@pytest.mark.parametrize(
+    ("word", "expected"),
+    [
+        ("runners", "runner"),
+        ("runner", "runner"),
+        ("shoes", "shoe"),
+        ("shoe", "shoe"),
+        ("boots", "boot"),
+        ("socks", "sock"),
+        ("dresses", "dress"),
+        ("dress", "dress"),
+        ("hoodies", "hoody"),
+        ("as", "as"),
+        ("", ""),
+    ],
+)
+def test_stem_handles_the_plurals_that_matter(word: str, expected: str) -> None:
+    assert stem(word) == expected
+
+
+async def test_keyword_baseline_matches_singular_against_plural_keywords() -> None:
+    product = Product(
+        source_id="9",
+        source_platform=SourcePlatform.SHOPIFY,
+        title="Men's Canvas Runner NZ",
+    )
+    candidates = await KeywordCandidates().candidates(product, spec())
+    assert candidates
+    assert candidates[0].category_id == "footwear_sneakers"
+
+
+async def test_keyword_baseline_is_not_swamped_by_gender_words() -> None:
+    product = Product(
+        source_id="10",
+        source_platform=SourcePlatform.SHOPIFY,
+        title="Women's Allbirds Flip Flop",
+    )
+    ids = {c.category_id for c in await KeywordCandidates().candidates(product, spec())}
+    assert "footwear_sandals" in ids
+    assert "w_dresses" not in ids
+    assert "w_jeans" not in ids

@@ -138,3 +138,59 @@ def test_version_is_printed() -> None:
     result = runner.invoke(app, ["version"])
     assert result.exit_code == 0
     assert result.output.strip()
+
+
+@respx.mock
+def test_map_requires_a_known_target() -> None:
+    result = runner.invoke(app, ["map", STORE, "--target", "nope", "--i-own-this-catalog"])
+    assert result.exit_code == 1
+    assert "No target spec with id nope" in result.output
+
+
+@respx.mock
+def test_map_without_a_key_suggests_the_keyless_path() -> None:
+    result = runner.invoke(
+        app, ["map", STORE, "--target", "meridian_apparel", "--i-own-this-catalog"]
+    )
+    assert result.exit_code == 1
+    assert "NEBIUS_API_KEY is not set" in result.output
+    assert "--candidates-only --retriever keyword" in result.output
+
+
+@respx.mock
+def test_candidates_only_with_keyword_retriever_needs_no_key() -> None:
+    mock_store()
+    result = runner.invoke(
+        app,
+        [
+            "map",
+            STORE,
+            "--target",
+            "meridian_apparel",
+            "--candidates-only",
+            "--retriever",
+            "keyword",
+            "--i-own-this-catalog",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "No model calls were made" in result.output
+
+
+@respx.mock
+def test_candidates_only_still_needs_a_key_for_embeddings() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "map",
+            STORE,
+            "--target",
+            "meridian_apparel",
+            "--candidates-only",
+            "--retriever",
+            "embedding",
+            "--i-own-this-catalog",
+        ],
+    )
+    assert result.exit_code == 1
+    assert "NEBIUS_API_KEY is not set" in result.output

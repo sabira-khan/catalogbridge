@@ -47,7 +47,7 @@ class TargetCategory(CanonicalModel):
         return ". ".join(parts)
 
     def keyword_terms(self) -> list[str]:
-        return [term.lower() for term in [self.name, *self.path, *self.keywords]]
+        return [term.lower() for term in [self.name, *self.keywords]]
 
 
 class TargetSpec(CanonicalModel):
