@@ -9,6 +9,13 @@ class CategoryCandidate(CanonicalModel):
     category_id: str
     path: list[str] = Field(default_factory=list)
     similarity: float = Field(ge=0.0, le=1.0)
+    retriever: str = ""
+
+
+class CorrectionExample(CanonicalModel):
+    title: str
+    category_id: str
+    category_path: list[str] = Field(default_factory=list)
 
 
 class MappedAttribute(CanonicalModel):
@@ -34,4 +41,5 @@ class MappedProduct(CanonicalModel):
     category_candidates: list[CategoryCandidate] = Field(default_factory=list)
     mapped_attributes: list[MappedAttribute] = Field(default_factory=list)
     translations: dict[str, Translation] = Field(default_factory=dict)
+    missing_attributes: list[str] = Field(default_factory=list)
     needs_review: bool = True

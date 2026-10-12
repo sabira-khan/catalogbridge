@@ -27,3 +27,18 @@ class ConnectivityCheck(CanonicalModel):
     ok: bool
     model_family: str
     one_line_summary: str
+
+
+class MappedAttributeDraft(CanonicalModel):
+    target_key: str
+    value: str
+    unit: str | None = None
+    confidence: float = Field(ge=0.0, le=1.0)
+
+
+class CategorySelection(CanonicalModel):
+    category_id: str | None = None
+    unmappable: bool = False
+    confidence: float = Field(ge=0.0, le=1.0)
+    reason: str
+    attributes: list[MappedAttributeDraft] = Field(default_factory=list)
