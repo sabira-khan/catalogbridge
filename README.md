@@ -25,8 +25,11 @@ Milestone 1 is complete:
 - Nemotron client wrapper with strict JSON schema output, validation and a repair round trip
 - A CLI that prints normalized canonical products from a store URL
 
-Next: target marketplace specs, embedding plus Nemotron category mapping with confidence, the
-review UI, and the evaluation harness.
+Target marketplaces are also in place: a YAML spec defines the category tree, required attributes
+and languages, and JSON and CSV exporters write to it.
+
+Next: embedding plus Nemotron category mapping with confidence, the review UI, and the evaluation
+harness.
 
 ## Setup
 
@@ -68,6 +71,13 @@ uv run catalogbridge extract deathwishcoffee.com --format json --out products.js
 uv run catalogbridge extract deathwishcoffee.com --format jsonl --limit 50 --i-own-this-catalog
 ```
 
+Inspect the target marketplaces you can migrate into:
+
+```sh
+uv run catalogbridge targets
+uv run catalogbridge targets --id meridian_apparel
+```
+
 Confirm your Token Factory key and model work:
 
 ```sh
@@ -85,10 +95,16 @@ two registry entries, with no changes anywhere else.
 | Stage | Module | Nemotron? |
 |---|---|---|
 | Extract | `backend/app/connectors` | No |
-| Normalize | `backend/app/pipeline` | Only for unstructured sources |
+| Normalize | `backend/app/pipeline/normalize.py` | Only for unstructured sources |
 | Map | `backend/app/pipeline` | Yes, category selection with confidence |
 | Translate | `backend/app/pipeline` | Yes |
-| Load | `backend/app/connectors` | No |
+| Load | `backend/app/pipeline/load.py` | No |
+
+A target marketplace is a YAML file in `targets/`, holding its category tree, its globally and
+per-category required attributes, its supported languages and its review threshold. Adding a target
+means adding a file, not changing code. `targets/meridian_apparel.yaml` is an invented apparel
+marketplace with 20 categories, used for the demo and the evaluation. It is not any real company's
+schema.
 
 Structured sources such as Shopify take a deterministic path, because an LLM adds cost and risk
 where the data is already clean. Unstructured sources, spreadsheets and web pages, go through

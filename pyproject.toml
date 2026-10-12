@@ -16,6 +16,7 @@ dependencies = [
     "typer>=0.15",
     "rich>=13.9",
     "tenacity>=9.0",
+    "pyyaml>=6.0",
 ]
 
 [project.scripts]
@@ -28,6 +29,7 @@ dev = [
     "respx>=0.22",
     "ruff>=0.8",
     "mypy>=1.13",
+    "types-PyYAML>=6.0",
 ]
 
 [build-system]

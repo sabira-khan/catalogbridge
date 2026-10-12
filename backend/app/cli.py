@@ -22,7 +22,10 @@ from app.logging import configure_logging
 from app.models.canonical import Product
 from app.models.enums import SourcePlatform
 from app.models.llm_io import ConnectivityCheck
+from app.models.target import TargetSpec
+from app.pipeline.load import LOADERS
 from app.pipeline.registry import get_normalizer
+from app.pipeline.targets import load_target_specs
 
 OWNERSHIP_NOTICE = (
     "CatalogBridge reads a store's public product feed. Only run it against a catalog "
@@ -110,6 +113,47 @@ def llm_check(
 
 
 @app.command()
+def targets(
+    target_id: Annotated[
+        str | None, typer.Option("--id", help="Show one target's category tree")
+    ] = None,
+) -> None:
+    try:
+        specs = load_target_specs()
+    except CatalogBridgeError as exc:
+        errors.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+    if not specs:
+        errors.print("[yellow]No target specs found in targets/[/yellow]")
+        raise typer.Exit(1)
+
+    if target_id is None:
+        table = Table(title="Target marketplaces")
+        table.add_column("id")
+        table.add_column("Name")
+        table.add_column("Categories", justify="right")
+        table.add_column("Languages")
+        table.add_column("Threshold", justify="right")
+        for spec in specs:
+            table.add_row(
+                spec.id,
+                spec.name,
+                str(len(spec.categories)),
+                ", ".join(spec.languages),
+                f"{spec.confidence_threshold:.2f}",
+            )
+        console.print(table)
+        console.print(f"Export formats: {', '.join(sorted(LOADERS))}")
+        return
+
+    match = next((spec for spec in specs if spec.id == target_id), None)
+    if match is None:
+        errors.print(f"[red]No target spec with id {target_id}[/red]")
+        raise typer.Exit(1)
+    _print_target(match)
+
+
+@app.command()
 def version() -> None:
     console.print(__version__)
 
@@ -187,6 +231,22 @@ def _print_table(products: list[Product], context: SourceContext) -> None:
         f"{pages} page{'' if pages == 1 else 's'} fetched from {context.base_url}, "
         f"currency {context.currency or 'unknown'}"
     )
+
+
+def _print_target(spec: TargetSpec) -> None:
+    console.print(f"[bold]{spec.name}[/bold] ({spec.id})")
+    if spec.description:
+        console.print(spec.description.strip())
+    required_global = [a.key for a in spec.global_attributes if a.required]
+    console.print(f"Required everywhere: {', '.join(required_global) or 'none'}")
+    table = Table(title=f"{len(spec.categories)} categories")
+    table.add_column("id", no_wrap=True)
+    table.add_column("Path")
+    table.add_column("Also required", max_width=34, overflow="ellipsis")
+    for category in spec.categories:
+        extra = [a.key for a in category.attributes if a.required]
+        table.add_row(category.id, category.label, ", ".join(extra) or "-")
+    console.print(table)
 
 
 def _price(product: Product) -> str:

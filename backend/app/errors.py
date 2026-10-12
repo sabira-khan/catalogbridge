@@ -53,6 +53,19 @@ class NormalizationError(CatalogBridgeError):
         super().__init__(f"cannot normalize record {source_id or '<no id>'}: {reason}")
 
 
+class TargetSpecError(CatalogBridgeError):
+    def __init__(self, path: str, reason: str) -> None:
+        self.path = path
+        self.reason = reason
+        super().__init__(f"invalid target spec {path}: {reason}")
+
+
+class UnsupportedTargetFormatError(CatalogBridgeError):
+    def __init__(self, name: str) -> None:
+        self.name = name
+        super().__init__(f"no loader for output format {name}")
+
+
 class LLMError(CatalogBridgeError):
     pass
 

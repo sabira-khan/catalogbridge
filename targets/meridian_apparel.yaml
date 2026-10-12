@@ -1,0 +1,355 @@
+id: meridian_apparel
+name: Meridian Marketplace (Apparel)
+description: >
+  An invented marketplace taxonomy for demonstration. Its category tree and
+  required attributes are modelled on how real apparel marketplaces structure
+  their listings, but it is not any company's real schema.
+languages: [en, fr, de, ar]
+default_language: en
+currency: EUR
+confidence_threshold: 0.7
+
+global_attributes:
+  - key: brand
+    label: Brand
+    type: text
+    required: true
+  - key: colour
+    label: Primary colour
+    type: enum
+    required: true
+    allowed_values:
+      [black, white, grey, beige, brown, navy, blue, green, red, pink, purple, yellow, orange, multicolour]
+  - key: material
+    label: Main material
+    type: text
+    required: true
+  - key: care
+    label: Care instructions
+    type: text
+    required: false
+  - key: country_of_origin
+    label: Country of origin
+    type: text
+    required: false
+
+categories:
+  - id: w_tops_tshirts
+    name: T-shirts
+    path: [Women, Tops, T-shirts]
+    keywords: [tee, t-shirt, tshirt, short sleeve top, graphic tee]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: neckline
+        label: Neckline
+        type: enum
+        required: false
+        allowed_values: [crew, v-neck, scoop, boat, turtleneck, polo]
+      - key: fit
+        label: Fit
+        type: enum
+        required: false
+        allowed_values: [slim, regular, relaxed, oversized]
+
+  - id: w_tops_shirts
+    name: Shirts and blouses
+    path: [Women, Tops, Shirts and blouses]
+    keywords: [blouse, button-down, button up, shirt, poplin shirt]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: sleeve_length
+        label: Sleeve length
+        type: enum
+        required: false
+        allowed_values: [sleeveless, short, three-quarter, long]
+
+  - id: w_knitwear
+    name: Knitwear
+    path: [Women, Tops, Knitwear]
+    keywords: [jumper, sweater, cardigan, pullover, merino, cashmere knit]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: knit_gauge
+        label: Knit gauge
+        type: enum
+        required: false
+        allowed_values: [fine, medium, chunky]
+
+  - id: w_dresses
+    name: Dresses
+    path: [Women, Dresses]
+    keywords: [dress, midi dress, maxi dress, slip dress, shirt dress]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: length
+        label: Length
+        type: enum
+        required: true
+        allowed_values: [mini, knee, midi, maxi]
+      - key: occasion
+        label: Occasion
+        type: enum
+        required: false
+        allowed_values: [casual, work, evening, bridal]
+
+  - id: w_trousers
+    name: Trousers
+    path: [Women, Bottoms, Trousers]
+    keywords: [trousers, pants, chinos, wide leg, tailored trousers]
+    attributes:
+      - key: waist_size
+        label: Waist size
+        type: text
+        required: true
+      - key: inseam_cm
+        label: Inseam
+        type: number
+        required: false
+        unit: cm
+      - key: rise
+        label: Rise
+        type: enum
+        required: false
+        allowed_values: [low, mid, high]
+
+  - id: w_jeans
+    name: Jeans
+    path: [Women, Bottoms, Jeans]
+    keywords: [jeans, denim, skinny jeans, straight leg denim, mom jeans]
+    attributes:
+      - key: waist_size
+        label: Waist size
+        type: text
+        required: true
+      - key: leg_shape
+        label: Leg shape
+        type: enum
+        required: true
+        allowed_values: [skinny, slim, straight, bootcut, wide, flare]
+      - key: wash
+        label: Wash
+        type: enum
+        required: false
+        allowed_values: [raw, light, mid, dark, black]
+
+  - id: w_skirts
+    name: Skirts
+    path: [Women, Bottoms, Skirts]
+    keywords: [skirt, pleated skirt, pencil skirt, a-line skirt]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: length
+        label: Length
+        type: enum
+        required: true
+        allowed_values: [mini, knee, midi, maxi]
+
+  - id: w_outerwear
+    name: Coats and jackets
+    path: [Women, Outerwear]
+    keywords: [coat, jacket, parka, trench, puffer, blazer]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: insulation
+        label: Insulation
+        type: enum
+        required: false
+        allowed_values: [none, down, synthetic, wool, fleece]
+      - key: waterproof
+        label: Waterproof
+        type: boolean
+        required: false
+
+  - id: m_tops_tshirts
+    name: T-shirts
+    path: [Men, Tops, T-shirts]
+    keywords: [tee, t-shirt, tshirt, graphic tee, short sleeve]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XS, S, M, L, XL, XXL, XXXL]
+      - key: fit
+        label: Fit
+        type: enum
+        required: false
+        allowed_values: [slim, regular, relaxed, oversized]
+
+  - id: m_tops_shirts
+    name: Shirts
+    path: [Men, Tops, Shirts]
+    keywords: [shirt, oxford shirt, button-down, flannel shirt, dress shirt]
+    attributes:
+      - key: collar_size
+        label: Collar size
+        type: text
+        required: true
+      - key: sleeve_length
+        label: Sleeve length
+        type: enum
+        required: false
+        allowed_values: [short, long]
+
+  - id: m_knitwear
+    name: Knitwear
+    path: [Men, Tops, Knitwear]
+    keywords: [jumper, sweater, cardigan, pullover, merino knit]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XS, S, M, L, XL, XXL, XXXL]
+
+  - id: m_trousers
+    name: Trousers
+    path: [Men, Bottoms, Trousers]
+    keywords: [trousers, pants, chinos, tailored trousers]
+    attributes:
+      - key: waist_size
+        label: Waist size
+        type: text
+        required: true
+      - key: inseam_cm
+        label: Inseam
+        type: number
+        required: false
+        unit: cm
+
+  - id: m_jeans
+    name: Jeans
+    path: [Men, Bottoms, Jeans]
+    keywords: [jeans, denim, selvedge, straight leg jeans]
+    attributes:
+      - key: waist_size
+        label: Waist size
+        type: text
+        required: true
+      - key: leg_shape
+        label: Leg shape
+        type: enum
+        required: true
+        allowed_values: [skinny, slim, straight, bootcut, wide]
+
+  - id: m_outerwear
+    name: Coats and jackets
+    path: [Men, Outerwear]
+    keywords: [coat, jacket, parka, overcoat, puffer, blazer]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XS, S, M, L, XL, XXL, XXXL]
+      - key: insulation
+        label: Insulation
+        type: enum
+        required: false
+        allowed_values: [none, down, synthetic, wool, fleece]
+
+  - id: footwear_sneakers
+    name: Sneakers
+    path: [Footwear, Sneakers]
+    keywords: [sneakers, trainers, running shoes, runners, plimsolls]
+    attributes:
+      - key: eu_size
+        label: EU size
+        type: text
+        required: true
+      - key: closure
+        label: Closure
+        type: enum
+        required: false
+        allowed_values: [laces, slip-on, velcro, zip]
+
+  - id: footwear_boots
+    name: Boots
+    path: [Footwear, Boots]
+    keywords: [boots, ankle boots, chelsea boots, hiking boots]
+    attributes:
+      - key: eu_size
+        label: EU size
+        type: text
+        required: true
+      - key: shaft_height_cm
+        label: Shaft height
+        type: number
+        required: false
+        unit: cm
+
+  - id: acc_bags
+    name: Bags
+    path: [Accessories, Bags]
+    keywords: [bag, tote, backpack, crossbody, shoulder bag, clutch]
+    attributes:
+      - key: bag_type
+        label: Bag type
+        type: enum
+        required: true
+        allowed_values: [tote, crossbody, shoulder, backpack, clutch, weekender]
+      - key: capacity_l
+        label: Capacity
+        type: number
+        required: false
+        unit: L
+
+  - id: acc_hats
+    name: Hats and caps
+    path: [Accessories, Hats and caps]
+    keywords: [hat, cap, beanie, baseball cap, bucket hat]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: false
+        allowed_values: [one-size, S, M, L, XL]
+
+  - id: acc_scarves
+    name: Scarves and gloves
+    path: [Accessories, Scarves and gloves]
+    keywords: [scarf, gloves, mittens, snood, shawl]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: false
+        allowed_values: [one-size, S, M, L]
+
+  - id: acc_socks
+    name: Socks and hosiery
+    path: [Accessories, Socks and hosiery]
+    keywords: [socks, tights, hosiery, stockings, no-show socks]
+    attributes:
+      - key: size
+        label: Size
+        type: text
+        required: true
+      - key: pack_quantity
+        label: Pack quantity
+        type: number
+        required: false
