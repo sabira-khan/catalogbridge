@@ -326,6 +326,7 @@ def _summary(row: MappedProductRow) -> ProductSummary:
     product = stored.product
     return ProductSummary(
         id=row.id,
+        job_id=row.job_id,
         source_id=product.source_id,
         title=product.title,
         brand=product.brand,

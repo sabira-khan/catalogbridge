@@ -37,6 +37,7 @@ class JobSummary(ApiModel):
 
 class ProductSummary(ApiModel):
     id: str
+    job_id: str
     source_id: str
     title: str
     brand: str | None

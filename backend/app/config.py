@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     llm_max_repairs: int = 1
 
     database_path: str = "catalogbridge.db"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     connector_page_size: int = 250
     connector_max_pages: int = 100
@@ -36,6 +37,10 @@ class Settings(BaseSettings):
     connector_max_attempts: int = 4
     connector_backoff_base: float = 1.0
     connector_backoff_cap: float = 20.0
+
+    @property
+    def allowed_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     @property
     def llm_configured(self) -> bool:

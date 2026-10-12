@@ -144,6 +144,7 @@ def test_jobs_and_products_are_listed(client: TestClient) -> None:
     assert [job["id"] for job in jobs] == [job_id]
     products = client.get(f"/api/jobs/{job_id}/products").json()
     assert products[0]["id"] == product_id
+    assert products[0]["job_id"] == job_id
     assert products[0]["needs_review"] is True
     assert products[0]["missing_attributes"] == ["colour", "material", "size"]
 

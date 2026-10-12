@@ -10,11 +10,6 @@ from app.config import get_settings
 from app.db import build_engine, set_engine
 from app.logging import configure_logging
 
-ALLOWED_ORIGINS = (
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-)
-
 
 def create_app() -> FastAPI:
     settings = get_settings()
@@ -23,7 +18,7 @@ def create_app() -> FastAPI:
     application = FastAPI(title="CatalogBridge", version=__version__)
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=list(ALLOWED_ORIGINS),
+        allow_origins=settings.allowed_origins,
         allow_credentials=False,
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type"],
