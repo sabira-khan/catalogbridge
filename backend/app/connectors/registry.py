@@ -6,6 +6,7 @@ from app.config import Settings
 from app.connectors.base import Connector
 from app.connectors.shopify import ShopifyConnector
 from app.connectors.spreadsheet import SpreadsheetConnector
+from app.connectors.website import WebsiteConnector
 from app.connectors.woocommerce import WooCommerceConnector
 from app.errors import UnsupportedSourceError
 from app.models.enums import SourcePlatform
@@ -15,6 +16,7 @@ CONNECTORS: dict[SourcePlatform, type[Connector]] = {
     SourcePlatform.WOOCOMMERCE: WooCommerceConnector,
     SourcePlatform.CSV: SpreadsheetConnector,
     SourcePlatform.XLSX: SpreadsheetConnector,
+    SourcePlatform.WEBSITE: WebsiteConnector,
 }
 
 

@@ -44,13 +44,17 @@ class SpreadsheetNormalizer(Normalizer):
     platform: ClassVar[SourcePlatform] = SourcePlatform.CSV
     requires_llm: ClassVar[bool] = True
 
-    def __init__(self, llm: LLMClient, mapping: HeaderMapping | None = None) -> None:
-        self.llm = llm
+    def __init__(
+        self, llm: LLMClient | None = None, mapping: HeaderMapping | None = None
+    ) -> None:
+        super().__init__(llm)
         self.mapping = mapping
 
     async def learn_headers(
         self, headers: list[str], sample: list[dict[str, str]], model: str | None = None
     ) -> HeaderMapping:
+        if self.llm is None:
+            raise NormalizationError("", "header mapping needs an llm client")
         mapping, _ = await self.llm.complete_json(
             prompt=render_prompt("map_headers", columns=_render_columns(headers, sample)),
             response_model=HeaderMapping,

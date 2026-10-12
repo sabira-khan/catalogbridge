@@ -112,14 +112,58 @@ def test_consent_can_be_given_interactively() -> None:
 
 
 @respx.mock
-def test_non_shopify_store_exits_with_a_readable_message() -> None:
+def test_non_shopify_store_exits_when_shopify_is_forced() -> None:
     respx.get(f"{STORE}/meta.json").mock(return_value=httpx.Response(404, json={}))
     respx.get(f"{STORE}/products.json").mock(
         return_value=httpx.Response(200, html="<html></html>")
     )
-    result = runner.invoke(app, ["extract", STORE, "--i-own-this-catalog"])
+    result = runner.invoke(
+        app, ["extract", STORE, "--platform", "shopify", "--i-own-this-catalog"]
+    )
     assert result.exit_code == 1
     assert "does not serve a Shopify products feed" in result.output
+
+
+@respx.mock
+def test_a_shopify_store_is_detected_without_the_platform_flag() -> None:
+    mock_store()
+    result = runner.invoke(app, ["extract", STORE, "--i-own-this-catalog"])
+    assert result.exit_code == 0, result.output
+    assert "2 products" in result.output
+
+
+@respx.mock
+def test_an_unknown_site_falls_back_to_the_website_connector() -> None:
+    respx.get(f"{STORE}/meta.json").mock(return_value=httpx.Response(404, json={}))
+    respx.get(f"{STORE}/products.json").mock(return_value=httpx.Response(404, json={}))
+    respx.get(f"{STORE}/wp-json/wc/store/v1/products").mock(
+        return_value=httpx.Response(404, json={})
+    )
+    respx.get(f"{STORE}/wp-json/wc/store/products").mock(
+        return_value=httpx.Response(404, json={})
+    )
+    respx.get(f"{STORE}/robots.txt").mock(return_value=httpx.Response(404))
+    respx.get(f"{STORE}/sitemap.xml").mock(return_value=httpx.Response(404))
+    respx.get(f"{STORE}/sitemap_index.xml").mock(return_value=httpx.Response(404))
+    respx.get(STORE).mock(
+        return_value=httpx.Response(
+            200,
+            text="<html><head><title>Plain Shop</title></head><body>hi</body></html>",
+            headers={"content-type": "text/html"},
+        )
+    )
+    result = runner.invoke(app, ["extract", STORE, "--i-own-this-catalog"])
+    assert result.exit_code == 0, result.output
+    assert "0 products" in result.output
+
+
+@respx.mock
+def test_a_csv_file_is_detected_and_needs_a_key(tmp_path: pathlib.Path) -> None:
+    path = tmp_path / "catalog.csv"
+    path.write_text("title,price\nAlpha,10.00\n", encoding="utf-8")
+    result = runner.invoke(app, ["extract", str(path), "--i-own-this-catalog"])
+    assert result.exit_code == 1
+    assert "NEBIUS_API_KEY is not set" in result.output
 
 
 def test_unusable_url_exits_with_a_readable_message() -> None:

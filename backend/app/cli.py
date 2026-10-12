@@ -13,8 +13,10 @@ from rich.table import Table
 from app import __version__
 from app.config import Settings, get_settings
 from app.connectors.base import SourceContext
+from app.connectors.detect import detect_source
 from app.connectors.registry import build_client, get_connector
-from app.errors import CatalogBridgeError
+from app.connectors.spreadsheet import SpreadsheetConnector
+from app.errors import CatalogBridgeError, MissingAPIKeyError
 from app.eval.dataset import LABELS_FILE, PRODUCTS_FILE, RESULTS_FILE, load_dataset
 from app.eval.runner import (
     bootstrap_labels,
@@ -82,8 +84,9 @@ class MapFormat(StrEnum):
 def extract(
     source: Annotated[str, typer.Argument(help="Store URL, for example examplestore.com")],
     platform: Annotated[
-        SourcePlatform, typer.Option("--platform", help="Source platform")
-    ] = SourcePlatform.SHOPIFY,
+        SourcePlatform | None,
+        typer.Option("--platform", help="Source platform, detected when omitted"),
+    ] = None,
     output_format: Annotated[
         OutputFormat, typer.Option("--format", help="How to print the result")
     ] = OutputFormat.TABLE,
@@ -148,8 +151,9 @@ def map_catalog(
     source: Annotated[str, typer.Argument(help="Store URL, for example examplestore.com")],
     target: Annotated[str, typer.Option("--target", help="Target spec id")],
     platform: Annotated[
-        SourcePlatform, typer.Option("--platform", help="Source platform")
-    ] = SourcePlatform.SHOPIFY,
+        SourcePlatform | None,
+        typer.Option("--platform", help="Source platform, detected when omitted"),
+    ] = None,
     retriever: Annotated[
         Retriever, typer.Option("--retriever", help="How candidates are retrieved")
     ] = Retriever.EMBEDDING,
@@ -357,10 +361,14 @@ def version() -> None:
 
 
 async def _extract(
-    source: str, platform: SourcePlatform, settings: Settings, limit: int | None
+    source: str,
+    platform: SourcePlatform | None,
+    settings: Settings,
+    limit: int | None,
 ) -> tuple[list[Product], SourceContext]:
     async with build_client(settings) as client:
-        connector = get_connector(platform, source, settings, client)
+        resolved = platform or await detect_source(source, settings, client)
+        connector = get_connector(resolved, source, settings, client)
         context = await connector.discover()
         records = []
         async for record in connector.iter_records():
@@ -368,7 +376,13 @@ async def _extract(
             if limit is not None and len(records) >= limit:
                 break
         context.pages_fetched = connector.pages_fetched
-        return await get_normalizer(platform).normalize_batch(records, context), context
+        llm = LLMClient(settings) if settings.llm_configured else None
+        normalizer = get_normalizer(resolved, llm)
+        if isinstance(connector, SpreadsheetConnector) and normalizer.requires_llm:
+            if llm is None:
+                raise MissingAPIKeyError
+            await normalizer.learn_headers(connector.headers, connector.sample())  # type: ignore[attr-defined]
+        return await normalizer.normalize_batch(records, context), context
 
 
 async def _llm_check(

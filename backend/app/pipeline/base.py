@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any, ClassVar
 
 from app.connectors.base import SourceContext
+from app.llm.client import LLMClient
 from app.models.canonical import Product
 from app.models.enums import SourcePlatform
 
@@ -11,6 +12,9 @@ from app.models.enums import SourcePlatform
 class Normalizer(ABC):
     platform: ClassVar[SourcePlatform]
     requires_llm: ClassVar[bool] = False
+
+    def __init__(self, llm: LLMClient | None = None) -> None:
+        self.llm = llm
 
     @abstractmethod
     async def normalize(self, record: dict[str, Any], context: SourceContext) -> Product: ...

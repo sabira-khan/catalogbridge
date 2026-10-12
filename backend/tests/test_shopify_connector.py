@@ -250,9 +250,22 @@ def test_registry_builds_a_shopify_connector(settings_factory: SettingsFactory) 
     assert isinstance(connector, ShopifyConnector)
 
 
-def test_registry_rejects_a_platform_without_a_connector(
-    settings_factory: SettingsFactory,
+def test_every_platform_has_a_connector_and_a_normalizer() -> None:
+    from app.connectors.registry import CONNECTORS
+    from app.pipeline.registry import NORMALIZERS
+
+    for platform in SourcePlatform:
+        assert platform in CONNECTORS, f"no connector for {platform}"
+        assert platform in NORMALIZERS, f"no normalizer for {platform}"
+
+
+def test_registry_rejects_an_unregistered_platform(
+    settings_factory: SettingsFactory, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    from app.connectors import registry
+
+    monkeypatch.setitem(registry.CONNECTORS, SourcePlatform.WEBSITE, None)  # type: ignore[arg-type]
+    monkeypatch.delitem(registry.CONNECTORS, SourcePlatform.WEBSITE)
     settings = settings_factory()
     client = build_client(settings)
     with pytest.raises(UnsupportedSourceError):

@@ -46,6 +46,12 @@ class StoreNotWooCommerceError(ConnectorError):
         super().__init__(f"{url} does not expose a WooCommerce Store API")
 
 
+class RobotsDisallowedError(ConnectorError):
+    def __init__(self, url: str) -> None:
+        self.url = url
+        super().__init__(f"robots.txt disallows fetching {url}")
+
+
 class StorePasswordProtectedError(ConnectorError):
     def __init__(self, url: str) -> None:
         self.url = url
