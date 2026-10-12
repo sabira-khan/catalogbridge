@@ -256,4 +256,4 @@ def test_registry_rejects_a_platform_without_a_connector(
     settings = settings_factory()
     client = build_client(settings)
     with pytest.raises(UnsupportedSourceError):
-        get_connector(SourcePlatform.WOOCOMMERCE, STORE, settings, client)
+        get_connector(SourcePlatform.WEBSITE, STORE, settings, client)

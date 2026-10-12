@@ -4,9 +4,11 @@ from app.errors import UnsupportedSourceError
 from app.models.enums import SourcePlatform
 from app.pipeline.base import Normalizer
 from app.pipeline.normalize import ShopifyNormalizer
+from app.pipeline.woocommerce import WooCommerceNormalizer
 
 NORMALIZERS: dict[SourcePlatform, type[Normalizer]] = {
     SourcePlatform.SHOPIFY: ShopifyNormalizer,
+    SourcePlatform.WOOCOMMERCE: WooCommerceNormalizer,
 }
 
 

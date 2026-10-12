@@ -40,6 +40,12 @@ class StoreNotShopifyError(ConnectorError):
         super().__init__(f"{url} does not serve a Shopify products feed")
 
 
+class StoreNotWooCommerceError(ConnectorError):
+    def __init__(self, url: str) -> None:
+        self.url = url
+        super().__init__(f"{url} does not expose a WooCommerce Store API")
+
+
 class StorePasswordProtectedError(ConnectorError):
     def __init__(self, url: str) -> None:
         self.url = url

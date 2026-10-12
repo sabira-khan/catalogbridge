@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from typing import Any
 
 from app.connectors.base import SourceContext
@@ -10,6 +10,9 @@ from app.models.canonical import Attribute, Product, ProductImage, Variant, Vari
 from app.models.enums import AttributeOrigin, SourcePlatform
 from app.pipeline.base import Normalizer
 from app.pipeline.html import html_to_text
+from app.pipeline.values import clean as _clean
+from app.pipeline.values import decimal_or_none as _decimal
+from app.pipeline.values import positive_decimal as _positive_decimal
 
 PLACEHOLDER_OPTION_VALUES = frozenset({"default title"})
 PLACEHOLDER_OPTION_NAMES = frozenset({"title"})
@@ -167,24 +170,3 @@ def _tags(value: object) -> list[str]:
     else:
         return []
     return [tag for tag in (c.strip() for c in candidates) if tag]
-
-
-def _clean(value: object) -> str | None:
-    if value is None:
-        return None
-    text = str(value).strip()
-    return text or None
-
-
-def _decimal(value: object) -> Decimal | None:
-    if value is None:
-        return None
-    try:
-        return Decimal(str(value))
-    except (InvalidOperation, ValueError):
-        return None
-
-
-def _positive_decimal(value: object) -> Decimal | None:
-    parsed = _decimal(value)
-    return parsed if parsed is not None and parsed > 0 else None

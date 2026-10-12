@@ -1,0 +1,158 @@
+[
+  {
+    "id": 101,
+    "name": "Heavyweight Organic Cotton Tee",
+    "slug": "heavyweight-organic-cotton-tee",
+    "permalink": "https://examplewoo.com/product/heavyweight-organic-cotton-tee/",
+    "type": "variable",
+    "sku": "",
+    "description": "<p>A 240gsm organic cotton tee.</p>\n<ul><li>Garment dyed</li></ul>",
+    "short_description": "<p>240gsm organic cotton.</p>",
+    "prices": {
+      "price": "4500",
+      "regular_price": "5500",
+      "sale_price": "4500",
+      "currency_code": "GBP",
+      "currency_symbol": "\u00a3",
+      "currency_minor_unit": 2,
+      "currency_decimal_separator": ".",
+      "currency_thousand_separator": ","
+    },
+    "images": [
+      {
+        "id": 1,
+        "src": "https://examplewoo.com/wp/tee-1.jpg",
+        "alt": "Front view"
+      },
+      {
+        "id": 2,
+        "src": "https://examplewoo.com/wp/tee-2.jpg",
+        "alt": ""
+      }
+    ],
+    "categories": [
+      {
+        "id": 9,
+        "name": "T-shirts",
+        "slug": "t-shirts"
+      },
+      {
+        "id": 4,
+        "name": "Tops",
+        "slug": "tops"
+      }
+    ],
+    "tags": [
+      {
+        "id": 20,
+        "name": "organic",
+        "slug": "organic"
+      },
+      {
+        "id": 21,
+        "name": "cotton",
+        "slug": "cotton"
+      }
+    ],
+    "attributes": [
+      {
+        "id": 1,
+        "name": "Size",
+        "taxonomy": "pa_size",
+        "has_variations": true,
+        "terms": [
+          {
+            "id": 30,
+            "name": "S",
+            "slug": "s"
+          },
+          {
+            "id": 31,
+            "name": "M",
+            "slug": "m"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Brand",
+        "taxonomy": "pa_brand",
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 40,
+            "name": "Northfield",
+            "slug": "northfield"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Material",
+        "taxonomy": "pa_material",
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 50,
+            "name": "Organic cotton",
+            "slug": "organic-cotton"
+          }
+        ]
+      }
+    ],
+    "variations": [
+      {
+        "id": 1011,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "S"
+          }
+        ]
+      },
+      {
+        "id": 1012,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "M"
+          }
+        ]
+      }
+    ],
+    "is_in_stock": true,
+    "is_purchasable": true,
+    "low_stock_remaining": null
+  },
+  {
+    "id": 102,
+    "name": "Selvedge Denim Jacket",
+    "slug": "selvedge-denim-jacket",
+    "permalink": "https://examplewoo.com/product/selvedge-denim-jacket/",
+    "type": "simple",
+    "sku": "SDJ-001",
+    "description": "",
+    "short_description": "<p>14oz selvedge denim, unwashed.</p>",
+    "prices": {
+      "price": "18900",
+      "regular_price": "18900",
+      "sale_price": "18900",
+      "currency_code": "GBP",
+      "currency_symbol": "\u00a3",
+      "currency_minor_unit": 2
+    },
+    "images": [],
+    "categories": [
+      {
+        "id": 12,
+        "name": "Outerwear",
+        "slug": "outerwear"
+      }
+    ],
+    "tags": [],
+    "attributes": [],
+    "variations": [],
+    "is_in_stock": false,
+    "low_stock_remaining": null
+  }
+]

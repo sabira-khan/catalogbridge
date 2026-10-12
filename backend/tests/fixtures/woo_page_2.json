@@ -1,0 +1,43 @@
+[
+  {
+    "id": 103,
+    "name": "Merino Beanie",
+    "slug": "merino-beanie",
+    "permalink": "https://examplewoo.com/product/merino-beanie/",
+    "type": "simple",
+    "sku": "MB-ONE",
+    "description": "<p>Fine merino, one size.</p>",
+    "short_description": "",
+    "prices": {
+      "price": "2400",
+      "regular_price": "2400",
+      "currency_code": "GBP",
+      "currency_minor_unit": 2
+    },
+    "images": [
+      {
+        "id": 7,
+        "src": "https://examplewoo.com/wp/beanie.jpg",
+        "alt": "Beanie"
+      }
+    ],
+    "categories": [
+      {
+        "id": 15,
+        "name": "Hats and caps",
+        "slug": "hats"
+      }
+    ],
+    "tags": [
+      {
+        "id": 22,
+        "name": "wool",
+        "slug": "wool"
+      }
+    ],
+    "attributes": [],
+    "variations": [],
+    "is_in_stock": true,
+    "low_stock_remaining": 3
+  }
+]

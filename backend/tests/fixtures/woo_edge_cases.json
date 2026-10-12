@@ -1,0 +1,43 @@
+[
+  {
+    "id": 104,
+    "name": "  Zero Minor Unit Currency Item  ",
+    "slug": "zero-minor-unit",
+    "permalink": "https://examplewoo.com/product/zero-minor-unit/",
+    "type": "simple",
+    "description": null,
+    "short_description": null,
+    "prices": {
+      "price": "1500",
+      "regular_price": "1500",
+      "currency_code": "jpy",
+      "currency_minor_unit": 0
+    },
+    "images": [
+      {
+        "src": "//examplewoo.com/wp/protocol-relative.jpg"
+      }
+    ],
+    "categories": [],
+    "tags": [],
+    "attributes": [
+      {
+        "id": 9,
+        "name": "Brand",
+        "has_variations": false,
+        "terms": []
+      }
+    ],
+    "variations": [],
+    "is_in_stock": true
+  },
+  {
+    "name": "No id at all",
+    "prices": {}
+  },
+  {
+    "id": 106,
+    "name": "",
+    "prices": {}
+  }
+]
