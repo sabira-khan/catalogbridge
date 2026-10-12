@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     llm_max_attempts: int = 4
     llm_max_repairs: int = 1
 
+    database_path: str = "catalogbridge.db"
+
     connector_page_size: int = 250
     connector_max_pages: int = 100
     connector_page_delay: float = 0.2
