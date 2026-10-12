@@ -7,7 +7,7 @@ from app.config import Settings
 from app.connectors.detect import detect_source
 from app.connectors.registry import build_client, get_connector
 from app.connectors.spreadsheet import SpreadsheetConnector
-from app.db import CorrectionRow, JobRow, MappedProductRow, Session, select, touch
+from app.db import CorrectionRow, JobRow, MappedProductRow, Session, UsageRow, select, touch
 from app.errors import MissingAPIKeyError
 from app.llm.client import LLMClient
 from app.llm.embeddings import EmbeddingClient
@@ -54,6 +54,7 @@ async def run_job(
     except Exception as exc:
         job.status = "failed"
         job.error = f"{type(exc).__name__}: {exc}"
+    store_usage(session, job.id, tracker)
     session.add(touch(job))
     session.commit()
     session.refresh(job)
@@ -119,6 +120,24 @@ def _store(session: Session, job: JobRow, mapped: list[MappedProduct]) -> None:
         )
     job.product_count = len(mapped)
     job.needs_review_count = sum(1 for item in mapped if item.needs_review)
+
+
+def store_usage(session: Session, job_id: str, tracker: UsageTracker) -> int:
+    for record in tracker.records:
+        session.add(
+            UsageRow(
+                job_id=job_id,
+                stage=record.stage,
+                model=record.model,
+                prompt_tokens=record.prompt_tokens,
+                completion_tokens=record.completion_tokens,
+                total_tokens=record.total_tokens,
+                latency_ms=record.latency_ms,
+                repairs=record.repairs,
+                failed=record.failed,
+            )
+        )
+    return len(tracker.records)
 
 
 def correction_examples(session: Session, job_id: str, limit: int = 12) -> list[CorrectionExample]:
@@ -189,6 +208,7 @@ async def remap_unreviewed(
         ).all()
         if candidate.needs_review and not candidate.reviewed
     )
+    store_usage(session, job.id, tracker)
     session.add(touch(job))
     session.commit()
     return updated

@@ -4,7 +4,7 @@ import asyncio
 import json
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 from rich.console import Console
@@ -44,7 +44,9 @@ from app.pipeline.candidates import (
 from app.pipeline.load import LOADERS, get_loader
 from app.pipeline.map import CategoryMapper
 from app.pipeline.registry import get_normalizer
+from app.pipeline.shopify_draft import ShopifyDraftLoader
 from app.pipeline.targets import find_target_spec, load_target_specs
+from app.pipeline.translate import Translator
 
 OWNERSHIP_NOTICE = (
     "CatalogBridge reads a store's public product feed. Only run it against a catalog "
@@ -168,6 +170,10 @@ def map_catalog(
     map_format: Annotated[
         MapFormat, typer.Option("--format", help="How to print the result")
     ] = MapFormat.TABLE,
+    translate: Annotated[
+        list[str] | None,
+        typer.Option("--translate", help="Language code, repeat for more"),
+    ] = None,
     limit: Annotated[int | None, typer.Option("--limit", help="Stop after N products")] = None,
     out: Annotated[Path | None, typer.Option("--out", help="Write to a file")] = None,
     i_own_this_catalog: Annotated[
@@ -199,6 +205,8 @@ def map_catalog(
             _print_candidates(shortlists, spec.id)
             return
         mapped = asyncio.run(_map(products, spec, settings, retriever, top_k))
+        if translate:
+            mapped = asyncio.run(_translate(mapped, spec, settings, list(translate)))
     except CatalogBridgeError as exc:
         errors.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from exc
@@ -212,6 +220,55 @@ def map_catalog(
         console.print(f"Wrote {len(mapped)} mapped products to {out}")
     else:
         console.print(rendered, soft_wrap=True)
+
+
+@app.command("push-drafts")
+def push_drafts(
+    source: Annotated[str, typer.Argument(help="Mapped JSON file from catalogbridge map")],
+    shop: Annotated[str, typer.Option("--shop", help="yourstore.myshopify.com")],
+    token: Annotated[
+        str, typer.Option("--token", help="Shopify Admin API access token", prompt=True)
+    ],
+    target: Annotated[str, typer.Option("--target", help="Target spec id")],
+    include_flagged: Annotated[
+        bool, typer.Option("--include-flagged", help="Push products still needing review")
+    ] = False,
+    verbose: Annotated[bool, typer.Option("-v", "--verbose")] = False,
+) -> None:
+    settings = _settings(verbose)
+    spec = find_target_spec(target)
+    if spec is None:
+        errors.print(f"[red]No target spec with id {target}[/red]")
+        raise typer.Exit(1)
+    path = Path(source)
+    if not path.is_file():
+        errors.print(f"[red]No such file: {path}[/red]")
+        raise typer.Exit(1)
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    mapped = [MappedProduct.model_validate(item) for item in payload.get("products", [])]
+    if not mapped:
+        errors.print("[red]That file holds no mapped products[/red]")
+        raise typer.Exit(1)
+
+    console.print(
+        f"[yellow]Creating {len(mapped)} DRAFT products on {shop}. "
+        "Drafts are not visible to shoppers until you publish them.[/yellow]"
+    )
+    typer.confirm("Continue?", abort=True)
+
+    try:
+        result = asyncio.run(_push(mapped, spec, settings, shop, token, include_flagged))
+    except CatalogBridgeError as exc:
+        errors.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+
+    console.print(
+        f"Created {len(result['created'])} drafts, skipped {len(result['skipped'])}, "
+        f"failed {len(result['failed'])}"
+    )
+    for failure in result["failed"]:
+        errors.print(f"[red]{failure['title']}: {failure['error']}[/red]")
 
 
 @app.command()
@@ -428,6 +485,29 @@ async def _map(
         spec, LLMClient(settings), _candidate_source(settings, retriever), top_k=top_k
     )
     return await mapper.map_products(products)
+
+
+async def _push(
+    mapped: list[MappedProduct],
+    spec: TargetSpec,
+    settings: Settings,
+    shop: str,
+    token: str,
+    include_flagged: bool,
+) -> dict[str, Any]:
+    async with build_client(settings) as client:
+        loader = ShopifyDraftLoader(shop, token, settings, client)
+        return await loader.push(mapped, spec, skip_flagged=not include_flagged)
+
+
+async def _translate(
+    mapped: list[MappedProduct],
+    spec: TargetSpec,
+    settings: Settings,
+    languages: list[str],
+) -> list[MappedProduct]:
+    translator = Translator(spec, LLMClient(settings))
+    return await translator.translate_products(mapped, languages)
 
 
 def _print_candidates(

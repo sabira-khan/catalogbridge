@@ -42,6 +42,22 @@ class MappedProductRow(SQLModel, table=True):
     payload: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
 
 
+class UsageRow(SQLModel, table=True):
+    __tablename__ = "usage"
+
+    id: int | None = Field(default=None, primary_key=True)
+    job_id: str = Field(index=True)
+    stage: str
+    model: str
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+    latency_ms: int = 0
+    repairs: int = 0
+    failed: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
 class CorrectionRow(SQLModel, table=True):
     __tablename__ = "corrections"
 
@@ -96,6 +112,7 @@ __all__ = [
     "JobRow",
     "MappedProductRow",
     "Session",
+    "UsageRow",
     "build_engine",
     "get_engine",
     "get_session",

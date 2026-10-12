@@ -280,3 +280,41 @@ def test_unknown_job_and_product_are_404(client: TestClient) -> None:
 
 def test_health_still_works_alongside_the_api(client: TestClient) -> None:
     assert client.get("/health").json()["status"] == "ok"
+
+
+def test_usage_is_empty_for_a_job_that_made_no_calls(client: TestClient) -> None:
+    job_id, _ = seed(client)
+    payload = client.get(f"/api/jobs/{job_id}/usage").json()
+    assert payload == {
+        "calls": 0,
+        "total_tokens": 0,
+        "tokens_by_stage": {},
+        "tokens_by_model": {},
+    }
+
+
+def test_usage_aggregates_stored_records(client: TestClient) -> None:
+    from app.db import UsageRow
+
+    job_id, _ = seed(client)
+    with Session(get_engine()) as session:
+        session.add(
+            UsageRow(
+                job_id=job_id, stage="map_category", model="nemotron", total_tokens=200
+            )
+        )
+        session.add(
+            UsageRow(
+                job_id=job_id, stage="index_categories", model="qwen-embed", total_tokens=50
+            )
+        )
+        session.commit()
+    payload = client.get(f"/api/jobs/{job_id}/usage").json()
+    assert payload["calls"] == 2
+    assert payload["total_tokens"] == 250
+    assert payload["tokens_by_stage"] == {"map_category": 200, "index_categories": 50}
+    assert payload["tokens_by_model"] == {"nemotron": 200, "qwen-embed": 50}
+
+
+def test_usage_for_an_unknown_job_is_404(client: TestClient) -> None:
+    assert client.get("/api/jobs/missing/usage").status_code == 404

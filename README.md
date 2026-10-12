@@ -34,8 +34,11 @@ Everything that does not need a Nebius account is built:
 - A review UI in Nuxt, where corrections are fed back as examples for the rest of the batch
 - An evaluation harness comparing embeddings plus Nemotron against a keyword baseline
 
-Still to come: translation, Shopify draft export, and the evaluation numbers themselves, which
-need a Token Factory key.
+- Translation into the target's languages, with brand names, units and sizes left untouched
+- Shopify draft export via the Admin API, which never publishes, only creates drafts
+
+Still to come: the evaluation numbers themselves, which need a Token Factory key and a labelled
+set.
 
 ## Setup
 
@@ -103,6 +106,20 @@ See which categories retrieval shortlists, with no model calls and no API key at
 ```sh
 uv run catalogbridge map allbirds.com --target meridian_apparel \
   --candidates-only --retriever keyword --i-own-this-catalog
+```
+
+Translate while mapping:
+
+```sh
+uv run catalogbridge map allbirds.com --target meridian_apparel \
+  --translate fr --translate de --format json --out mapped.json --i-own-this-catalog
+```
+
+Push the result to a Shopify store as drafts. Products still needing review are skipped unless you
+pass `--include-flagged`, and nothing is ever published:
+
+```sh
+uv run catalogbridge push-drafts mapped.json --shop yourstore.myshopify.com --target meridian_apparel
 ```
 
 Inspect the target marketplaces you can migrate into:

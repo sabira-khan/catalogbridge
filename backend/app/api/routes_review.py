@@ -18,7 +18,16 @@ from app.api.schemas import (
 )
 from app.api.service import correction_examples, new_job, remap_unreviewed, run_job
 from app.config import Settings, get_settings
-from app.db import CorrectionRow, JobRow, MappedProductRow, Session, get_session, select, touch
+from app.db import (
+    CorrectionRow,
+    JobRow,
+    MappedProductRow,
+    Session,
+    UsageRow,
+    get_session,
+    select,
+    touch,
+)
 from app.llm.usage import UsageTracker
 from app.models.mapping import MappedProduct
 from app.models.target import TargetSpec
@@ -235,9 +244,21 @@ def export_job(job_id: str, session: SessionDep, fmt: str = "json") -> dict[str,
     }
 
 
-@router.get("/usage", response_model=UsageSummary)
-def read_usage() -> UsageSummary:
-    return UsageSummary(calls=0, total_tokens=0, tokens_by_stage={}, tokens_by_model={})
+@router.get("/jobs/{job_id}/usage", response_model=UsageSummary)
+def read_usage(job_id: str, session: SessionDep) -> UsageSummary:
+    job = _job_or_404(session, job_id)
+    rows = session.exec(select(UsageRow).where(UsageRow.job_id == job.id)).all()
+    by_stage: dict[str, int] = {}
+    by_model: dict[str, int] = {}
+    for row in rows:
+        by_stage[row.stage] = by_stage.get(row.stage, 0) + row.total_tokens
+        by_model[row.model] = by_model.get(row.model, 0) + row.total_tokens
+    return UsageSummary(
+        calls=len(rows),
+        total_tokens=sum(row.total_tokens for row in rows),
+        tokens_by_stage=by_stage,
+        tokens_by_model=by_model,
+    )
 
 
 def _spec_or_404(target_id: str) -> TargetSpec:

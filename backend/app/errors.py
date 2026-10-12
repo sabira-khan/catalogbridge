@@ -78,6 +78,10 @@ class UnsupportedTargetFormatError(CatalogBridgeError):
         super().__init__(f"no loader for output format {name}")
 
 
+class ShopifyAdminError(CatalogBridgeError):
+    pass
+
+
 class LLMError(CatalogBridgeError):
     pass
 

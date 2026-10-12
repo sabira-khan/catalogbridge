@@ -56,3 +56,14 @@ class HeaderMapping(CanonicalModel):
     mappings: list[ColumnMapping] = Field(default_factory=list)
     unmapped_columns: list[str] = Field(default_factory=list)
     notes: str | None = None
+
+
+class TranslatedAttribute(CanonicalModel):
+    key: str
+    value: str
+
+
+class TranslationDraft(CanonicalModel):
+    title: str
+    description: str | None = None
+    attributes: list[TranslatedAttribute] = Field(default_factory=list)
