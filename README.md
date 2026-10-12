@@ -25,15 +25,21 @@ Milestone 1 is complete:
 - Nemotron client wrapper with strict JSON schema output, validation and a repair round trip
 - A CLI that prints normalized canonical products from a store URL
 
-Target marketplaces are also in place: a YAML spec defines the category tree, required attributes
-and languages, and JSON and CSV exporters write to it.
+Everything that does not need a Nebius account is built:
 
-Next: embedding plus Nemotron category mapping with confidence, the review UI, and the evaluation
-harness.
+- Four sources: Shopify, WooCommerce, generic websites with JSON-LD, and CSV or XLSX files, with
+  the platform detected automatically
+- Target marketplaces as YAML specs, with JSON and CSV exporters
+- Category mapping: embedding retrieval, then Nemotron picking one with a confidence and a reason
+- A review UI in Nuxt, where corrections are fed back as examples for the rest of the batch
+- An evaluation harness comparing embeddings plus Nemotron against a keyword baseline
+
+Still to come: translation, Shopify draft export, and the evaluation numbers themselves, which
+need a Token Factory key.
 
 ## Setup
 
-Requires [uv](https://docs.astral.sh/uv/). It installs Python 3.12 itself.
+Requires [uv](https://docs.astral.sh/uv/) for the backend and Node 20 or newer for the UI.
 
 ```sh
 uv python install 3.12
@@ -43,6 +49,21 @@ cp .env.example .env
 
 Extraction and normalization need no API key. Only the LLM stages do. To use them, put a Nebius
 Token Factory key in `.env` as `NEBIUS_API_KEY`.
+
+For the review UI:
+
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+It expects the API at `http://127.0.0.1:8000`. Override with `NUXT_PUBLIC_API_BASE`, and add the
+UI's origin to `CORS_ORIGINS` in `.env` if you change its port.
+
+```sh
+uv run uvicorn app.main:app --reload
+```
 
 ## Usage
 
@@ -69,6 +90,19 @@ Export the full canonical records:
 ```sh
 uv run catalogbridge extract deathwishcoffee.com --format json --out products.json --i-own-this-catalog
 uv run catalogbridge extract deathwishcoffee.com --format jsonl --limit 50 --i-own-this-catalog
+```
+
+Map a catalog into a target marketplace and export it:
+
+```sh
+uv run catalogbridge map allbirds.com --target meridian_apparel --format csv --out mapped.csv --i-own-this-catalog
+```
+
+See which categories retrieval shortlists, with no model calls and no API key at all:
+
+```sh
+uv run catalogbridge map allbirds.com --target meridian_apparel \
+  --candidates-only --retriever keyword --i-own-this-catalog
 ```
 
 Inspect the target marketplaces you can migrate into:
@@ -110,15 +144,27 @@ Structured sources such as Shopify take a deterministic path, because an LLM add
 where the data is already clean. Unstructured sources, spreadsheets and web pages, go through
 Nemotron into the same canonical schema. `Normalizer.requires_llm` marks which is which.
 
+## Evaluation
+
+```sh
+uv run catalogbridge eval bootstrap --store allbirds.com --target meridian_apparel --per-store 26 --i-own-this-catalog
+uv run catalogbridge eval run --target meridian_apparel
+```
+
+See `eval/README.md` for the method, including what it deliberately does not do.
+
 ## Tests
 
 ```sh
 uv run pytest
 uv run ruff check .
 uv run mypy backend/app
+cd frontend && npx nuxt typecheck
 ```
 
 No test touches the network. Shopify fixtures are trimmed captures of real public product feeds.
+WooCommerce fixtures are written to the documented Store API schema, not captured, because no
+public store exposing that API could be found. Shopify fixtures are trimmed captures of real public product feeds.
 
 ## License
 
