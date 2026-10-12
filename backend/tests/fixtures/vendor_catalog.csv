@@ -1,0 +1,5 @@
+Internal ID;Product Name;Long Description;Maker;Our Category;Retail (GBP);Was Price;Stock Qty;Variant;Variant Val;Net weight (g);Fabric;Photo URL;Keywords;Cost Price;Warehouse Bin
+1001;Merino Crew Jumper;<p>A fine gauge merino jumper.</p>;Northfield;Knitwear;89.00;120.00;12;Size;S;340;Merino wool;https://cdn.example.com/jumper-s.jpg;knitwear,wool;41.20;A-12-3
+1002;Merino Crew Jumper;<p>A fine gauge merino jumper.</p>;Northfield;Knitwear;89.00;120.00;0;Size;M;360;Merino wool;https://cdn.example.com/jumper-m.jpg;knitwear,wool;41.20;A-12-4
+1003;Selvedge Denim Jacket;14oz unwashed selvedge.;Northfield;Outerwear;189.00;;4;Size;L;980;Cotton denim;https://cdn.example.com/jacket.jpg|https://cdn.example.com/jacket-2.jpg;denim,outerwear;88.00;B-02-1
+1004;;No name row should be skipped;Northfield;Knitwear;10.00;;1;Size;S;100;Wool;;;5.00;C-01-1

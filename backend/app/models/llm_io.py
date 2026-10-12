@@ -42,3 +42,17 @@ class CategorySelection(CanonicalModel):
     confidence: float = Field(ge=0.0, le=1.0)
     reason: str
     attributes: list[MappedAttributeDraft] = Field(default_factory=list)
+
+
+class ColumnMapping(CanonicalModel):
+    column: str
+    canonical_field: str
+    attribute_name: str | None = None
+    unit: str | None = None
+    confidence: float = Field(ge=0.0, le=1.0)
+
+
+class HeaderMapping(CanonicalModel):
+    mappings: list[ColumnMapping] = Field(default_factory=list)
+    unmapped_columns: list[str] = Field(default_factory=list)
+    notes: str | None = None
