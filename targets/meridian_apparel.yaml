@@ -164,6 +164,86 @@ categories:
         required: true
         allowed_values: [mini, knee, midi, maxi]
 
+  - id: w_bodysuits
+    name: Bodysuits
+    path: [Women, Tops, Bodysuits]
+    keywords: [bodysuit, leotard, body, one-piece top]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: sleeve_length
+        label: Sleeve length
+        type: enum
+        required: false
+        allowed_values: [sleeveless, short, three-quarter, long]
+
+  - id: w_shorts
+    name: Shorts
+    path: [Women, Bottoms, Shorts]
+    keywords: [short, bike short, cycling short, denim short]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: inseam_cm
+        label: Inseam
+        type: number
+        required: false
+        unit: cm
+
+  - id: w_activewear_leggings
+    name: Leggings
+    path: [Women, Activewear, Leggings]
+    keywords: [legging, yoga pant, compression pant, running tight]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: rise
+        label: Rise
+        type: enum
+        required: false
+        allowed_values: [low, mid, high]
+      - key: inseam_cm
+        label: Inseam
+        type: number
+        required: false
+        unit: cm
+
+  - id: w_activewear_tops
+    name: Sports bras and active tops
+    path: [Women, Activewear, Sports bras and tops]
+    keywords: [sports bra, bra, crop top, tank top, active top, camisole]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: support_level
+        label: Support level
+        type: enum
+        required: false
+        allowed_values: [light, medium, high]
+
+  - id: w_swimwear
+    name: Swimwear
+    path: [Women, Swimwear]
+    keywords: [swimsuit, swimwear, bikini, swim top, swim bottom, one piece swimsuit]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+
   - id: w_outerwear
     name: Coats and jackets
     path: [Women, Outerwear]
@@ -271,6 +351,16 @@ categories:
         type: enum
         required: false
         allowed_values: [none, down, synthetic, wool, fleece]
+
+  - id: m_shorts
+    name: Shorts
+    path: [Men, Bottoms, Shorts]
+    keywords: [short, chino short, denim short, swim short]
+    attributes:
+      - key: waist_size
+        label: Waist size
+        type: text
+        required: true
 
   - id: footwear_sneakers
     name: Sneakers

@@ -15,6 +15,14 @@ from app.config import Settings, get_settings
 from app.connectors.base import SourceContext
 from app.connectors.registry import build_client, get_connector
 from app.errors import CatalogBridgeError
+from app.eval.dataset import LABELS_FILE, PRODUCTS_FILE, RESULTS_FILE, load_dataset
+from app.eval.runner import (
+    bootstrap_labels,
+    collect_products,
+    run_mapping,
+    run_retrieval,
+    write_results,
+)
 from app.llm.client import LLMClient
 from app.llm.embeddings import EmbeddingClient
 from app.llm.prompts.loader import render_prompt
@@ -46,6 +54,9 @@ app = typer.Typer(
     add_completion=False,
     help="Migrate a vendor product catalog into a target marketplace schema.",
 )
+eval_app = typer.Typer(no_args_is_help=True, help="Measure mapping quality against labels.")
+app.add_typer(eval_app, name="eval")
+
 console = Console()
 errors = Console(stderr=True)
 
@@ -238,6 +249,106 @@ def targets(
         errors.print(f"[red]No target spec with id {target_id}[/red]")
         raise typer.Exit(1)
     _print_target(match)
+
+
+@eval_app.command("bootstrap")
+def eval_bootstrap(
+    store: Annotated[
+        list[str], typer.Option("--store", help="Shopify store URL, repeat for more")
+    ],
+    target: Annotated[str, typer.Option("--target", help="Target spec id")],
+    per_store: Annotated[
+        int, typer.Option("--per-store", help="Products to take from each store")
+    ] = 30,
+    i_own_this_catalog: Annotated[
+        bool, typer.Option("--i-own-this-catalog", help="Confirm you may read these catalogs")
+    ] = False,
+    verbose: Annotated[bool, typer.Option("-v", "--verbose")] = False,
+) -> None:
+    settings = _settings(verbose)
+    spec = find_target_spec(target)
+    if spec is None:
+        errors.print(f"[red]No target spec with id {target}[/red]")
+        raise typer.Exit(1)
+    if not i_own_this_catalog:
+        errors.print(f"[yellow]{OWNERSHIP_NOTICE}[/yellow]")
+        typer.confirm("Do you own or have authorization to read these catalogs?", abort=True)
+
+    try:
+        pairs = asyncio.run(collect_products(list(store), settings, per_store))
+        rows = asyncio.run(bootstrap_labels(pairs, spec, PRODUCTS_FILE, LABELS_FILE))
+    except CatalogBridgeError as exc:
+        errors.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+
+    done = sum(1 for row in rows if row.labelled)
+    console.print(f"Cached {len(pairs)} products to {PRODUCTS_FILE}")
+    console.print(f"Wrote {len(rows)} label rows to {LABELS_FILE}")
+    console.print(
+        f"[bold]{done} of {len(rows)} labelled.[/bold] Fill expected_category_id for the rest, "
+        "then run: catalogbridge eval run --target " + target
+    )
+
+
+@eval_app.command("run")
+def eval_run(
+    target: Annotated[str, typer.Option("--target", help="Target spec id")],
+    top_k: Annotated[int, typer.Option("--top-k", help="Candidates per product")] = DEFAULT_TOP_K,
+    with_mapping: Annotated[
+        bool, typer.Option("--with-mapping/--retrieval-only", help="Also run the model")
+    ] = True,
+    verbose: Annotated[bool, typer.Option("-v", "--verbose")] = False,
+) -> None:
+    settings = _settings(verbose)
+    spec = find_target_spec(target)
+    if spec is None:
+        errors.print(f"[red]No target spec with id {target}[/red]")
+        raise typer.Exit(1)
+
+    dataset = load_dataset()
+    labelled, total = dataset.coverage()
+    if not labelled:
+        errors.print(
+            f"[red]No labelled products. Fill expected_category_id in {LABELS_FILE} first.[/red]"
+        )
+        raise typer.Exit(1)
+    console.print(f"{labelled} of {total} products are labelled")
+
+    retrieval = [asyncio.run(run_retrieval(spec, settings, "keyword", top_k))]
+    mapping = []
+    if settings.llm_configured:
+        retrieval.append(asyncio.run(run_retrieval(spec, settings, "embedding", top_k)))
+        if with_mapping:
+            mapping.append(asyncio.run(run_mapping(spec, settings, "embedding", top_k)))
+    else:
+        console.print(
+            "[yellow]No NEBIUS_API_KEY, so embedding retrieval and mapping were skipped.[/yellow]"
+        )
+
+    table = Table(title="Retrieval")
+    table.add_column("Retriever")
+    table.add_column("Recall@k", justify="right")
+    table.add_column("Top-1", justify="right")
+    table.add_column("No candidate", justify="right")
+    table.add_column("Mean rank", justify="right")
+    for report in retrieval:
+        table.add_row(
+            report.retriever,
+            f"{report.recall_at_k * 100:.1f}%",
+            f"{report.top1_accuracy * 100:.1f}%",
+            f"{report.no_candidate_rate * 100:.1f}%",
+            "-" if report.mean_rank_of_correct is None else str(report.mean_rank_of_correct),
+        )
+    console.print(table)
+    for item in mapping:
+        console.print(
+            f"Mapping accuracy {item.accuracy * 100:.1f}%, attributes "
+            f"{item.attribute_completeness * 100:.1f}%, review rate "
+            f"{item.needs_review_rate * 100:.1f}%"
+        )
+
+    write_results(RESULTS_FILE, spec, retrieval, mapping)
+    console.print(f"Wrote {RESULTS_FILE}")
 
 
 @app.command()
