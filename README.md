@@ -138,6 +138,37 @@ uv run catalogbridge llm-check
 `--i-own-this-catalog` is required. Without it the CLI asks for confirmation before making any
 request, because you should only migrate a catalog you own or are authorized to migrate.
 
+## A note on running this yourself
+
+CatalogBridge needs a Nebius Token Factory API key for the stages that use a model: normalization
+of unstructured sources, category mapping, and translation. Extraction, the deterministic
+normalizers, retrieval, the review UI and the exporters all run without one.
+
+**The author could not obtain that key.** Kuwait, where this was built, is not available in the
+billing country list for either Nebius Token Factory or Nebius AI Cloud. Nebius Support confirmed
+this is final:
+
+> Kuwait isn't currently supported for billing registration on Nebius Token Factory. We're unable
+> to provision an account manually or make an individual exception. Hackathon eligibility is
+> separate from Token Factory billing availability.
+
+This is a billing availability gap, not a sanctions one. Kuwait is not subject to OFAC sanctions
+and is not on the hackathon's excluded country list.
+
+What that means for this repository:
+
+- Every stage is implemented and unit tested, with model responses mocked. The tests do not prove
+  the prompts produce good output, only that the code handles what comes back.
+- The evaluation reports the keyword baseline, which needs no key. The embedding and Nemotron
+  columns are empty, and `eval/results.md` says so rather than quietly omitting them.
+- Nothing here has been run against a live Nemotron endpoint. Any claim about accuracy would be
+  unfounded, so none is made.
+
+If you have a Token Factory key, `uv run catalogbridge llm-check` confirms it works and
+`uv run catalogbridge eval run --target meridian_apparel` fills in the missing columns. Because the
+client reads `NEBIUS_BASE_URL` from the environment, it also works against any OpenAI-compatible
+endpoint, including a self-hosted Nemotron behind vLLM.
+
 ## Architecture
 
 Sources and targets are both pluggable. Adding a source means one `Connector`, one `Normalizer` and

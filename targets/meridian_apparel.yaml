@@ -164,6 +164,21 @@ categories:
         required: true
         allowed_values: [mini, knee, midi, maxi]
 
+  - id: w_sweatshirts
+    name: Hoodies and sweatshirts
+    path: [Women, Tops, Hoodies and sweatshirts]
+    keywords: [hoodie, sweatshirt, crewneck, french terry, zip hoodie, pullover hoodie]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XXS, XS, S, M, L, XL, XXL, XXXL]
+      - key: hood
+        label: Hood
+        type: boolean
+        required: false
+
   - id: w_bodysuits
     name: Bodysuits
     path: [Women, Tops, Bodysuits]
@@ -305,6 +320,21 @@ categories:
         type: enum
         required: true
         allowed_values: [XS, S, M, L, XL, XXL, XXXL]
+
+  - id: m_sweatshirts
+    name: Hoodies and sweatshirts
+    path: [Men, Tops, Hoodies and sweatshirts]
+    keywords: [hoodie, sweatshirt, crewneck, french terry, zip hoodie, pullover hoodie]
+    attributes:
+      - key: size
+        label: Size
+        type: enum
+        required: true
+        allowed_values: [XS, S, M, L, XL, XXL, XXXL]
+      - key: hood
+        label: Hood
+        type: boolean
+        required: false
 
   - id: m_trousers
     name: Trousers

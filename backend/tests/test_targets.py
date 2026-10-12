@@ -41,7 +41,7 @@ def test_shipped_apparel_spec_loads_and_validates() -> None:
     assert len(specs) == 1
     spec = specs[0]
     assert spec.id == "meridian_apparel"
-    assert len(spec.categories) == 28
+    assert len(spec.categories) == 30
     assert len({c.id for c in spec.categories}) == len(spec.categories)
     assert sorted({c.path[0] for c in spec.categories}) == [
         "Accessories",

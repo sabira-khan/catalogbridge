@@ -31,6 +31,29 @@ retriever's top three guesses as a starting point.
 
 Re-running bootstrap preserves any `expected_category_id` you have already filled in.
 
+### Who labelled this set
+
+All 104 rows were labelled in one pass by reading each product's title, its seller-assigned
+product type, and the opening of its description. Every judgment call carries a short reason in
+the `notes` column, 16 rows in total. Those are the rows to check first if you only have time to
+check some.
+
+**This labelling has a weakness you should know about.** It was done by an AI assistant, not by a
+retail merchandiser. For most of this catalog that is fine, because a Tree Runner is a sneaker and
+a beanie is a hat whoever is looking. But where the call was genuinely arguable, an AI labeller and
+an AI classifier may share the same instinct and agree for the same wrong reason, which flatters
+the accuracy number. The honest way to read these results is: the labels are a reasonable
+first pass, and the 16 flagged rows deserve a human eye before the numbers are quoted anywhere.
+
+The arguable ones, so they are findable:
+
+- Taylor Stitch's long-sleeve waffle "Organic Cotton Crew" filed as a t-shirt, because the
+  taxonomy has no long-sleeve tee category
+- The "Maritime Shirt Jacket" filed as outerwear, following the seller, though it is an overshirt
+- Allbirds "Cruiser Slip On" filed as a sneaker rather than a flat
+- Allbirds "Breezer" and "Lounger" styles filed as flats rather than sneakers
+- A knit rugby shirt filed as a shirt rather than knitwear
+
 **`expected_category_id` is never auto-filled.** An earlier version of this harness pre-filled it
 from the keyword retriever when that retriever returned exactly one candidate. That is leakage: the
 keyword baseline would have been scored against labels it generated itself. The guess belongs in
@@ -83,10 +106,19 @@ across three styles, three colourways of one legging. Whatever the model does on
 will do on all of them, which over-weights those product families. Consider labelling one
 colourway per family and leaving the rest blank.
 
-**The taxonomy was extended after seeing the data.** Bodysuits, shorts, leggings, sports bras and
-swimwear were added once the dataset showed that Girlfriend Collective's catalog had nowhere to go.
-That is taxonomy completeness rather than model tuning, but it happened after the data was seen and
-should be known.
+**The taxonomy was extended twice after seeing the data.** First bodysuits, shorts, leggings,
+sports bras and swimwear, once Girlfriend Collective's catalog had nowhere to go. Then hoodies and
+sweatshirts, once 13 of the 104 products turned out to be French terry crewnecks and hoodies that
+would otherwise have been mislabelled as knitwear. Both are taxonomy completeness rather than model
+tuning, and both raised the keyword baseline rather than lowering it, but they happened after the
+data was seen and should be known.
+
+For the record, the baseline moved as the taxonomy got more honest:
+
+| Taxonomy | Top-1 | Recall@5 | No candidate |
+|---|---|---|---|
+| 28 categories, hoodies filed as knitwear | 72.1% | 90.4% | 8.6% |
+| 30 categories, hoodies have a home | 76.0% | 94.2% | 4.8% |
 
 **Four stores is not a representative sample** of apparel retail, let alone of e-commerce. The
 numbers describe these 104 products and nothing more.

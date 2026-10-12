@@ -104,7 +104,7 @@ def test_targets_are_listed(client: TestClient) -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload[0]["id"] == "meridian_apparel"
-    assert len(payload[0]["categories"]) == 28
+    assert len(payload[0]["categories"]) == 30
 
 
 def test_one_target_exposes_required_attributes(client: TestClient) -> None:

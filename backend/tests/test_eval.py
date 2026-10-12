@@ -235,5 +235,25 @@ def test_shipped_dataset_is_balanced_across_stores() -> None:
     assert set(counts.values()) == {26}
 
 
-def test_shipped_labels_are_not_prefilled() -> None:
-    assert all(not row.labelled for row in load_dataset().labels)
+def test_every_shipped_label_is_a_real_category() -> None:
+    spec = load_target_specs()[0]
+    dataset = load_dataset()
+    labelled, total = dataset.coverage()
+    assert labelled == total == 104
+    for row in dataset.labels:
+        assert spec.category(row.expected_category_id) is not None, (
+            f"{row.title} is labelled {row.expected_category_id}, which is not in {spec.id}"
+        )
+
+
+def test_every_labelled_product_has_a_cached_product_record() -> None:
+    dataset = load_dataset()
+    cached = {product.source_id for product in dataset.products}
+    missing = [row.source_id for row in dataset.labels if row.source_id not in cached]
+    assert missing == []
+
+
+def test_judgement_calls_are_documented_in_notes() -> None:
+    noted = [row for row in load_dataset().labels if row.notes]
+    assert noted, "arguable labels should carry a reason"
+    assert all(len(row.notes) > 10 for row in noted)
